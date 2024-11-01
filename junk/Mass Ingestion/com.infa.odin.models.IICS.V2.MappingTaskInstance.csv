@@ -1,0 +1,7 @@
+core.externalId,core.name,core.description,core.businessDescription,core.businessName,core.reference
+cdmi_sql_server_retail_to_dbx_bronze_retail_1,cdmi_sql_server_retail_to_dbx_bronze_retail (1),Instance of cdmi_sql_server_retail_to_dbx_bronze_retail Database Ingestion Task,,,
+cdmi_sql_server_marketing_to_dbx_bronze_marketing_1,cdmi_sql_server_marketing_to_dbx_bronze_marketing (1),Instance of cdmi_sql_server_marketing_to_dbx_bronze_marketing Database Ingestion Task,,,
+ami_servicenow_to_dbx_1,ami_servicenow_to_dbx (1),Instance of ami_servicenow_to_dbx Application Ingestion Task,,,
+apmi_servicenow_to_snowflake_1,apmi_servicenow_to_snowflake (1),Instance of apmi_servicenow_to_snowflake Application Ingestion Task,,,
+mi_nsen_mktg_sqlsrvr_to_snowflake_1,mi_nsen_mktg_sqlsrvr_to_snowflake (1),Instance of mi_nsen_mktg_sqlsrvr_to_snowflake Database Ingestion Task,,,
+mi_nsen_retail_sqlsrvr_to_snowflake_1,mi_nsen_retail_sqlsrvr_to_snowflake (1),Instance of mi_nsen_retail_sqlsrvr_to_snowflake Database Ingestion Task,,,

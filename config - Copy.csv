@@ -1,0 +1,3 @@
+Source Resource,Source Dataset,Source Element,Target Resource,Target Dataset,Target Element,Dataset Match Score,Element Match Score,Set Score to negative to ignore score
+dct_sql_server_kafka_poc/NavilinkD1/dbo,CLM,.*,dct_kafka_sflk_poc,.*{name},.*,1,0.94,
+dct_sql_server_kafka_poc,CLM,.*,dct_kafka_sflk_poc,.*,.*,2,2,
