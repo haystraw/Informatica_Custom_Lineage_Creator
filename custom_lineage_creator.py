@@ -13,7 +13,11 @@ import json
 import io
 warnings.simplefilter("ignore")
 
-version = 20241101
+'''
+pip install pandas datetime openpyxl
+'''
+
+version = 20241104
 pause_when_done = True
 
 error_quietly = False
@@ -34,8 +38,12 @@ dataset_name_column = "Name"
 dataset_refid_column = "Reference ID"
 dataset_hierarchical_column = "HierarchicalPath"
 
+default_config_file = "config.csv"
+if len(sys.argv) > 1:
+    default_config_file = sys.argv[1]
+
 script_location = os.path.dirname(os.path.abspath(__file__))
-config_file = script_location+"/config.csv"
+config_file = script_location+"/"+default_config_file
 directory_with_assets_export = script_location+""
 directory_to_write_links_file = script_location+"/links"
 directory_with_templates = script_location+"/templates"
@@ -481,7 +489,7 @@ def write_resource_to_zip(resource_name, df_dict):
                     # Write the buffer content to the zip file as {name}.csv
                     zf.writestr(f"{name}.csv", csv_buffer.getvalue())
         
-        print(f"Successfully written DataFrames to {zip_file_path}")
+        print(f"Successfully written {resource_name} to {zip_file_path}")
 
     except Exception as e:
         print(f"An error occurred while writing to the zip file: {e}")
@@ -594,7 +602,7 @@ def readConfigAndStart(fileName):
 
                             etl_dataset_name = this_ETL_Dataset_Name.replace('{name}',ds_name)
                             etl_dataset_path, etl_dataset_type, etl_dataset_id = generate_additional_class(this_ETL_Resource_Name,base_path, base_type, base_id, this_ETL_Dataset_Type, {"name": etl_dataset_name}, dataset_name=ds_name)
-                            etl_ref_id = resource_ref_id_base+"//"+etl_dataset_id+"~"+etl_dataset_type
+                            etl_ref_id = resource_ref_id_base+"://"+etl_dataset_id+"~"+etl_dataset_type
 
                             dataset_lineage = {
                                             'src Reference ID': ds_id, 
@@ -669,7 +677,7 @@ def readConfigAndStart(fileName):
                                     if len(base_type) > 1 and len(base_id) > 1:
                                         etl_element_name = this_ETL_Element_Name.replace('{name}',es_name)
                                         etl_element_path, etl_element_type, etl_element_id = generate_additional_class(this_ETL_Resource_Name,etl_dataset_path, etl_dataset_type, etl_dataset_id, this_ETL_Element_Type, {"name": etl_element_name})
-                                        etl_element_ref_id = resource_ref_id_base+"//"+etl_element_id+"~"+etl_element_type
+                                        etl_element_ref_id = resource_ref_id_base+"://"+etl_element_id+"~"+etl_element_type
 
                                         element_lineage = {
                                                         'src Reference ID': es_id, 
