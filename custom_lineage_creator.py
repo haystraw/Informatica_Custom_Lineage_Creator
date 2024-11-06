@@ -17,7 +17,7 @@ warnings.simplefilter("ignore")
 pip install pandas datetime openpyxl
 '''
 
-version = 20241104
+version = 20241105
 pause_when_done = True
 
 error_quietly = False
@@ -83,12 +83,9 @@ def get_reference_prefix(name):
     else:
         return f"xxx_{name}_xxx"
 
-def add_df_to_resource_classes(resource_name, class_name, new_row):
+def add_df_to_resource_classes(resource_name, class_name, new_row, extra_fields={}, replacement_text={}):
     global resource_classes
 
-    # Create a DataFrame from the new_row
-    new_df = pandas.DataFrame([new_row])
-    
     # Use setdefault to initialize the resource_classes if it doesn't exist
     resource_classes.setdefault(resource_name, {})
     
@@ -97,12 +94,31 @@ def add_df_to_resource_classes(resource_name, class_name, new_row):
         resource_classes[resource_name][class_name] = pandas.DataFrame()  # Initialize as empty DataFrame
 
     # Concatenate the existing DataFrame with the new row
+    
+    this_name = new_row.get('core.name', "NO_NAME")
+    for key in extra_fields:
+        if ":" in key:
+            parts = key.split(":")
+            p_for_name = parts[0]
+            for r_key in replacement_text:
+                p_for_name = p_for_name.replace(r_key, replacement_text[r_key])
+            p_name = parts[1]
+            if this_name == p_for_name:
+                if p_name in resource_classes[resource_name][class_name]:
+                    new_value = extra_fields[key]
+                    for r_key in replacement_text:
+                        new_value = new_value.replace(r_key, replacement_text[r_key])                   
+                    extra_field = {p_name: new_value}
+                    new_row.update(extra_field)
+
+                
+    new_df = pandas.DataFrame([new_row])  
     resource_classes[resource_name][class_name] = pandas.concat(
         [resource_classes[resource_name][class_name], new_df],
         ignore_index=True
     )
 
-def generate_additional_class(resource_name, parent_path, parent_type, parent_id, current_type, attribute_dict, dataset_name="XXX", extra_fields={}):
+def generate_additional_class(resource_name, parent_path, parent_type, parent_id, current_type, attribute_dict, dataset_name="XXX", element_name="XXX", extra_fields={}, replacement_text={}):
     global resource_links
     ## Fatching the name from the provided 
     this_etl_name = attribute_dict["name"].replace('{name}',dataset_name)
@@ -111,22 +127,30 @@ def generate_additional_class(resource_name, parent_path, parent_type, parent_id
     this_etl_id = re.sub(r'[^a-zA-Z0-9]', '_', this_etl_id_work).lower()
     this_association = find_association(parent_type, current_type)
     new_assocation_row = {"Source": parent_id, "Target": this_etl_id , "Association": this_association}
+
+    '''
+    replacement_text=dataset_name
+    if element_name != 'XXX':
+        replacement_text = element_name    
+    '''
+        
     ## new_assocation_df = pandas.concat([resource_links, pandas.DataFrame([new_assocation_row])], ignore_index=True) 
     ## resource_links = new_assocation_df
-    add_df_to_resource_classes(resource_name, "links", new_assocation_row)
+    add_df_to_resource_classes(resource_name, "links", new_assocation_row, replacement_text=replacement_text)
 
     df = load_template(resource_name, current_type)
     new_row = {"core.name": this_etl_name, "core.externalId": this_etl_id}
 
+    ## print(f"DEBUGSCOTT2: element_name is {element_name}")
 
-    add_df_to_resource_classes(resource_name, current_type, new_row)
+    add_df_to_resource_classes(resource_name, current_type, new_row, extra_fields=extra_fields, replacement_text=replacement_text)
     ## test new_df = pandas.concat([df, pandas.DataFrame([new_row])], ignore_index=True)       
     ## test resource_classes[resource_name][current_type]  = new_df
 
     return this_etl_path, current_type, this_etl_id
 
 
-def generate_resource_path(resource_name,etl_path_string, etl_types_string, dataset_name="XXX"):
+def generate_resource_path(resource_name,etl_path_string, etl_types_string, dataset_name="XXX", extra_fields={}, replacement_text={}):
     global resource_links
 
     formatted_etl_path_string = etl_path_string.replace('{name}',dataset_name)
@@ -148,17 +172,17 @@ def generate_resource_path(resource_name,etl_path_string, etl_types_string, data
             previous_type = etl_types[index-1]
             this_association = find_association(previous_type, this_etl_type)
             new_assocation_row = {"Source": previous_id, "Target": this_etl_id , "Association": this_association}
-            add_df_to_resource_classes(resource_name, "links", new_assocation_row)
+            add_df_to_resource_classes(resource_name, "links", new_assocation_row, replacement_text=replacement_text)
         else:
             this_etl_id_work = this_etl_name
             this_etl_id = re.sub(r'[^a-zA-Z0-9]', '_', this_etl_id_work).lower()
             new_assocation_row = {"Source": "$resource", "Target": this_etl_id , "Association": "core.ResourceParentChild"}
-            add_df_to_resource_classes(resource_name, "links", new_assocation_row)
+            add_df_to_resource_classes(resource_name, "links", new_assocation_row, extra_fields=extra_fields, replacement_text=replacement_text)
       
 
         df = load_template(resource_name,this_etl_type)
         new_row = {"core.name": value, "core.externalId": this_etl_id}
-        add_df_to_resource_classes(resource_name, this_etl_type, new_row)
+        add_df_to_resource_classes(resource_name, this_etl_type, new_row,extra_fields=extra_fields, replacement_text=replacement_text)
 
         last_type = this_etl_type
         last_id = this_etl_id
@@ -475,6 +499,8 @@ def write_links_zip(df):
 
 def write_resource_to_zip(resource_name, df_dict):
     # Create a zip file and write each DataFrame to separate CSV files
+    if not os.path.exists(directory_to_write_resource_files):
+        os.makedirs(directory_to_write_resource_files)            
 
     zip_file_path = directory_to_write_resource_files+"/"+resource_name+"_"+timestamp+".zip"
     try:
@@ -483,6 +509,7 @@ def write_resource_to_zip(resource_name, df_dict):
                 with io.StringIO() as csv_buffer:
                     # Write the DataFrame to the buffer
                     df_cleaned = df.loc[:, ~df.columns.str.contains('^Unnamed')]  # Remove any "Unnamed" columns if they exist
+                    df_cleaned.drop_duplicates(inplace=True)
                     df_cleaned.to_csv(csv_buffer, index=False, header=True)
                     csv_buffer.seek(0)  # Reset the buffer to the beginning
                     
@@ -530,7 +557,7 @@ def create_extra_fields(row):
     ]
 
     # Create a dictionary from the row, excluding specified headers
-    filtered_dict = {col: row[col] for col in row.index if col not in excluded_headers}
+    filtered_dict = {col: row.get(col, "") for col in row.keys() if col not in excluded_headers}
 
     return filtered_dict
 
@@ -553,15 +580,15 @@ def readConfigAndStart(fileName):
             this_Target_Element_regex = row['Target Element']
             this_Dataset_Match_Score = row['Dataset Match Score']
             this_Element_Match_Score = row['Element Match Score']
-            this_ETL_Resource_Name = row['ETL Resource Name']
-            this_ETL_Path = row['ETL Path']	
-            this_ETL_Path_Types = row['ETL Path Types']	
-            this_ETL_Dataset_Type = row['ETL Dataset Type']	
-            this_ETL_Dataset_Name = row['ETL Dataset Name']	
-            this_ETL_Element_Type = row['ETL Element Type']
-            this_ETL_Element_Name = row['ETL Element Name']
+            this_ETL_Resource_Name = row.get('ETL Resource Name', "")
+            this_ETL_Path = row.get('ETL Path', "")
+            this_ETL_Path_Types = row.get('ETL Path Types', "")
+            this_ETL_Dataset_Type = row.get('ETL Dataset Type', "")
+            this_ETL_Dataset_Name = row.get('ETL Dataset Name', "")
+            this_ETL_Element_Type = row.get('ETL Element Type', "")
+            this_ETL_Element_Name = row.get('ETL Element Name', "")
 
-            ## extra_fields = create_extra_fields(row)
+            extra_fields = create_extra_fields(row)
 
             resource_ref_id_base = get_reference_prefix(this_ETL_Resource_Name)
             base_path = ""
@@ -582,9 +609,10 @@ def readConfigAndStart(fileName):
                 ds_id = source[dataset_refid_column]
                 ds_name = source[dataset_name_column]
 
+                updated_regex = this_Target_Dataset_regex.replace('{name}',ds_name).replace('{s_dataset}',ds_name)
                 target_dataset_match = df_full_export_Datasets[
                     df_full_export_Datasets[dataset_hierarchical_column].str.startswith(f"{this_Target_Resource}/", na=False) &
-                    df_full_export_Datasets[dataset_name_column].str.contains('^'+this_Target_Dataset_regex.replace('{name}',ds_name)+'$', na=False, regex=True, flags=re.IGNORECASE)
+                    df_full_export_Datasets[dataset_name_column].str.contains('^'+updated_regex+'$', na=False, regex=True, flags=re.IGNORECASE)
                 ]
 
                 for index, target in target_dataset_match.iterrows():
@@ -596,12 +624,10 @@ def readConfigAndStart(fileName):
                     if score >= float(this_Dataset_Match_Score):
 
                         if len(this_ETL_Path) > 1 and len(this_ETL_Path_Types) > 1:
-                            if not generated_base:
-                                base_path, base_type, base_id = generate_resource_path(this_ETL_Resource_Name, this_ETL_Path, this_ETL_Path_Types, dataset_name=ds_name)
-                                generated_base = True
-
-                            etl_dataset_name = this_ETL_Dataset_Name.replace('{name}',ds_name)
-                            etl_dataset_path, etl_dataset_type, etl_dataset_id = generate_additional_class(this_ETL_Resource_Name,base_path, base_type, base_id, this_ETL_Dataset_Type, {"name": etl_dataset_name}, dataset_name=ds_name)
+                            replacement_text = {'{name}': ds_name, '{s_dataset}': ds_name, '{t_dataset}': dt_name }
+                            base_path, base_type, base_id = generate_resource_path(this_ETL_Resource_Name, this_ETL_Path, this_ETL_Path_Types, dataset_name=ds_name, extra_fields=extra_fields, replacement_text=replacement_text)
+                            etl_dataset_name = this_ETL_Dataset_Name.replace('{name}',ds_name).replace('{s_dataset}',ds_name).replace('{t_dataset}',dt_name)
+                            etl_dataset_path, etl_dataset_type, etl_dataset_id = generate_additional_class(this_ETL_Resource_Name,base_path, base_type, base_id, this_ETL_Dataset_Type, {"name": etl_dataset_name}, dataset_name=ds_name, extra_fields=extra_fields, replacement_text=replacement_text )
                             etl_ref_id = resource_ref_id_base+"://"+etl_dataset_id+"~"+etl_dataset_type
 
                             dataset_lineage = {
@@ -663,9 +689,10 @@ def readConfigAndStart(fileName):
                         if target_dataset_score >= float(this_Dataset_Match_Score):
 
 
+                            updated_regex =  this_Target_Element_regex.replace('{name}',es_name).replace('{s_dataset}',ds_name).replace('{t_dataset}',dt_name).replace('{s_element}',es_name)
                             target_element_match = df_full_export_Elements[
                                 df_full_export_Elements[element_hierarchical_column].str.startswith(f"{target[element_hierarchical_column]}/", na=False) &
-                                df_full_export_Elements[element_name_column].str.contains('^'+this_Target_Element_regex.replace('{name}',es_name)+'$', na=False, regex=True, flags=re.IGNORECASE)
+                                df_full_export_Elements[element_name_column].str.contains('^'+updated_regex+'$', na=False, regex=True, flags=re.IGNORECASE)
                             ] 
                             for index, target in target_element_match.iterrows():
                                 et_hp = target[element_hierarchical_column]
@@ -675,8 +702,9 @@ def readConfigAndStart(fileName):
                                 score = difflib.SequenceMatcher(None, es_name, et_name).ratio()
                                 if score >= float(this_Element_Match_Score):
                                     if len(base_type) > 1 and len(base_id) > 1:
-                                        etl_element_name = this_ETL_Element_Name.replace('{name}',es_name)
-                                        etl_element_path, etl_element_type, etl_element_id = generate_additional_class(this_ETL_Resource_Name,etl_dataset_path, etl_dataset_type, etl_dataset_id, this_ETL_Element_Type, {"name": etl_element_name})
+                                        replacement_text = {'{name}': es_name, '{s_dataset}': ds_name, '{t_dataset}': dt_name, '{s_element}': es_name, '{t_element}': et_name}
+                                        etl_element_name = this_ETL_Element_Name.replace('{name}',es_name).replace('{s_dataset}',ds_name).replace('{t_dataset}',dt_name).replace('{s_element}',es_name).replace('{t_element}',et_name)
+                                        etl_element_path, etl_element_type, etl_element_id = generate_additional_class(this_ETL_Resource_Name,etl_dataset_path, etl_dataset_type, etl_dataset_id, this_ETL_Element_Type, {"name": etl_element_name}, extra_fields=extra_fields, element_name=es_name, replacement_text=replacement_text)
                                         etl_element_ref_id = resource_ref_id_base+"://"+etl_element_id+"~"+etl_element_type
 
                                         element_lineage = {
@@ -724,7 +752,7 @@ def readConfigAndStart(fileName):
     else:
         for index, row in final_dataframe.iterrows():
             print(f"{row['src HierarchicalPath']} -> {row['tgt HierarchicalPath']} ({row['Match Score']})")
-
+        final_dataframe.drop_duplicates(inplace=True)
         write_csv(final_dataframe)
         write_links_zip(final_dataframe)
 
