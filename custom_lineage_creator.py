@@ -17,10 +17,12 @@ warnings.simplefilter("ignore")
 pip install pandas datetime openpyxl
 '''
 
-version = 20241105
+version = 20241106
 pause_when_done = True
 
 error_quietly = False
+
+force_attributes_not_in_template = True
 
 catalog_source_sheet = "Catalog Source"
 catalog_refid_column = "Reference ID"
@@ -104,7 +106,7 @@ def add_df_to_resource_classes(resource_name, class_name, new_row, extra_fields=
                 p_for_name = p_for_name.replace(r_key, replacement_text[r_key])
             p_name = parts[1]
             if this_name == p_for_name:
-                if p_name in resource_classes[resource_name][class_name]:
+                if p_name in resource_classes[resource_name][class_name] or force_attributes_not_in_template:
                     new_value = extra_fields[key]
                     for r_key in replacement_text:
                         new_value = new_value.replace(r_key, replacement_text[r_key])                   
@@ -241,8 +243,9 @@ def find_association(from_class, to_class):
             # Get the classes to match against
             association_from = association.get("fromClass")
             association_to = association.get("toClass")
+            isParentChildKind = "core.ParentChild" in association.get("associationKinds")
 
-            if (is_class_or_superclass(association_from, from_class, class_hierarchy) and
+            if (isParentChildKind) and (is_class_or_superclass(association_from, from_class, class_hierarchy) and
                 is_class_or_superclass(association_to, to_class, class_hierarchy)):
                 return f"{package_name}.{association.get('name')}"
     return None
