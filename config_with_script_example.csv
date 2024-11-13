@@ -1,5 +1,5 @@
 Source Resource,Source Dataset,Source Element,Target Resource,Target Dataset,Target Element,Dataset Match Score,Element Match Score,ETL Resource Name,ETL Path,ETL Path Types,ETL Dataset Type,ETL Dataset Name,ETL Element Type,ETL Element Name,create_csv.py:core.description,{t_element}:core.description,{t_element}:core.expression,{t_element}:core.calculationComplexity,create_csv.py:com.infa.odin.models.Script.sourceCode,create_csv.py (Statement at Line 89):com.infa.odin.models.Script.sourceStatementText
-NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_USER_ID,Files,User Information.csv,User ID,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_USER_ID,Files,User Information.csv,User ID,-1,-1,Python Scriptss,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
 import pandas as pd
 import sys
 import os
@@ -115,7 +115,7 @@ df = df.rename(columns={
     ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
     ""POINT_BALANCE"": ""Point Balance""
 })"
-NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,USER_NAME,Files,User Information.csv,Username,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,USER_NAME,Files,User Information.csv,Username,-1,-1,Python Scriptss,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
 import pandas as pd
 import sys
 import os
@@ -231,7 +231,7 @@ df = df.rename(columns={
     ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
     ""POINT_BALANCE"": ""Point Balance""
 })"
-NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,USER_PASSWORD,Files,User Information.csv,Password,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,USER_PASSWORD,Files,User Information.csv,Password,-1,-1,Python Scriptss,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
 import pandas as pd
 import sys
 import os
@@ -347,7 +347,7 @@ df = df.rename(columns={
     ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
     ""POINT_BALANCE"": ""Point Balance""
 })"
-NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_FIRST_NAME,Files,User Information.csv,First Name,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_FIRST_NAME,Files,User Information.csv,First Name,-1,-1,Python Scriptss,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
 import pandas as pd
 import sys
 import os
@@ -463,7 +463,7 @@ df = df.rename(columns={
     ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
     ""POINT_BALANCE"": ""Point Balance""
 })"
-NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_LAST_NAME,Files,User Information.csv,Last Name,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_LAST_NAME,Files,User Information.csv,Last Name,-1,-1,Python Scriptss,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
 import pandas as pd
 import sys
 import os
@@ -579,7 +579,7 @@ df = df.rename(columns={
     ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
     ""POINT_BALANCE"": ""Point Balance""
 })"
-NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_REG_DATE,Files,User Information.csv,Registration Date,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_REG_DATE,Files,User Information.csv,Registration Date,-1,-1,Python Scriptss,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
 import pandas as pd
 import sys
 import os
@@ -695,7 +695,7 @@ df = df.rename(columns={
     ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
     ""POINT_BALANCE"": ""Point Balance""
 })"
-NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_BIRTH_DATE,Files,User Information.csv,Birth Date,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_BIRTH_DATE,Files,User Information.csv,Birth Date,-1,-1,Python Scriptss,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
 import pandas as pd
 import sys
 import os
@@ -811,7 +811,7 @@ df = df.rename(columns={
     ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
     ""POINT_BALANCE"": ""Point Balance""
 })"
-NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_GENDER,Files,User Information.csv,Gender,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_GENDER,Files,User Information.csv,Gender,-1,-1,Python Scriptss,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
 import pandas as pd
 import sys
 import os
@@ -927,7 +927,7 @@ df = df.rename(columns={
     ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
     ""POINT_BALANCE"": ""Point Balance""
 })"
-NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_ADDRESS1,Files,User Information.csv,Primary Address,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_ADDRESS1,Files,User Information.csv,Primary Address,-1,-1,Python Scriptss,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
 import pandas as pd
 import sys
 import os
@@ -1043,7 +1043,7 @@ df = df.rename(columns={
     ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
     ""POINT_BALANCE"": ""Point Balance""
 })"
-NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_ADDRESS2,Files,User Information.csv,Secondary Address,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_ADDRESS2,Files,User Information.csv,Secondary Address,-1,-1,Python Scriptss,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
 import pandas as pd
 import sys
 import os
@@ -1159,7 +1159,7 @@ df = df.rename(columns={
     ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
     ""POINT_BALANCE"": ""Point Balance""
 })"
-NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_CITY,Files,User Information.csv,City,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_CITY,Files,User Information.csv,City,-1,-1,Python Scriptss,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
 import pandas as pd
 import sys
 import os
@@ -1275,7 +1275,7 @@ df = df.rename(columns={
     ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
     ""POINT_BALANCE"": ""Point Balance""
 })"
-NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_STATE,Files,User Information.csv,State,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_STATE,Files,User Information.csv,State,-1,-1,Python Scriptss,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
 import pandas as pd
 import sys
 import os
@@ -1391,7 +1391,7 @@ df = df.rename(columns={
     ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
     ""POINT_BALANCE"": ""Point Balance""
 })"
-NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_POSTCODE,Files,User Information.csv,Postal Code,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_POSTCODE,Files,User Information.csv,Postal Code,-1,-1,Python Scriptss,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
 import pandas as pd
 import sys
 import os
@@ -1507,7 +1507,7 @@ df = df.rename(columns={
     ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
     ""POINT_BALANCE"": ""Point Balance""
 })"
-NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_EMAIL_ID,Files,User Information.csv,Email,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_EMAIL_ID,Files,User Information.csv,Email,-1,-1,Python Scriptss,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
 import pandas as pd
 import sys
 import os
@@ -1623,7 +1623,7 @@ df = df.rename(columns={
     ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
     ""POINT_BALANCE"": ""Point Balance""
 })"
-NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_PHONE_NUMBER,Files,User Information.csv,Phone Number,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_PHONE_NUMBER,Files,User Information.csv,Phone Number,-1,-1,Python Scriptss,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
 import pandas as pd
 import sys
 import os
@@ -1739,7 +1739,7 @@ df = df.rename(columns={
     ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
     ""POINT_BALANCE"": ""Point Balance""
 })"
-NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_CARD_ID,Files,User Information.csv,Card ID,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_CARD_ID,Files,User Information.csv,Card ID,-1,-1,Python Scriptss,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
 import pandas as pd
 import sys
 import os
@@ -1855,7 +1855,7 @@ df = df.rename(columns={
     ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
     ""POINT_BALANCE"": ""Point Balance""
 })"
-NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_CARD_STATUS,Files,User Information.csv,Card Status,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_CARD_STATUS,Files,User Information.csv,Card Status,-1,-1,Python Scriptss,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
 import pandas as pd
 import sys
 import os
@@ -1971,7 +1971,7 @@ df = df.rename(columns={
     ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
     ""POINT_BALANCE"": ""Point Balance""
 })"
-NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_CARD_EXP_DATE,Files,User Information.csv,Card Expiration Date,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_CARD_EXP_DATE,Files,User Information.csv,Card Expiration Date,-1,-1,Python Scriptss,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
 import pandas as pd
 import sys
 import os
@@ -2087,7 +2087,7 @@ df = df.rename(columns={
     ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
     ""POINT_BALANCE"": ""Point Balance""
 })"
-NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,POINT_BALANCE,Files,User Information.csv,Point Balance,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,POINT_BALANCE,Files,User Information.csv,Point Balance,-1,-1,Python Scriptss,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
 import pandas as pd
 import sys
 import os
@@ -2203,7 +2203,7 @@ df = df.rename(columns={
     ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
     ""POINT_BALANCE"": ""Point Balance""
 })"
-NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_FIRST_NAME,Files,User Information.csv,User's Full Name,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]","df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]",Multi Source Calculation,"import jaydebeapi
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_FIRST_NAME,Files,User Information.csv,User's Full Name,-1,-1,Python Scriptss,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]","df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]",Multi Source Calculation,"import jaydebeapi
 import pandas as pd
 import sys
 import os
@@ -2322,7 +2322,7 @@ df = df.rename(columns={
     ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
     ""POINT_BALANCE"": ""Point Balance""
 })"
-NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_LAST_NAME,Files,User Information.csv,User's Full Name,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]","df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]",Multi Source Calculation,"import jaydebeapi
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_LAST_NAME,Files,User Information.csv,User's Full Name,-1,-1,Python Scriptss,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]","df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]",Multi Source Calculation,"import jaydebeapi
 import pandas as pd
 import sys
 import os

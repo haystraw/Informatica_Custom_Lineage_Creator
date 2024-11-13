@@ -17,7 +17,7 @@ warnings.simplefilter("ignore")
 pip install pandas datetime openpyxl
 '''
 
-version = 20241106
+version = 20241113
 pause_when_done = True
 
 error_quietly = False
@@ -109,9 +109,11 @@ def add_df_to_resource_classes(resource_name, class_name, new_row, extra_fields=
                 if p_name in resource_classes[resource_name][class_name] or force_attributes_not_in_template:
                     new_value = extra_fields[key]
                     for r_key in replacement_text:
-                        new_value = new_value.replace(r_key, replacement_text[r_key])                   
-                    extra_field = {p_name: new_value}
-                    new_row.update(extra_field)
+                        new_value = new_value.replace(r_key, replacement_text[r_key]) 
+                    if len(new_value) > 0:
+                    # Only add if there's a value here. If it's a null value, then skip 
+                        extra_field = {p_name: new_value}
+                        new_row.update(extra_field)
 
                 
     new_df = pandas.DataFrame([new_row])  
