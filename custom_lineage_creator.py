@@ -11,13 +11,19 @@ import re
 import openpyxl
 import json
 import io
+import requests
+import getpass
+from string import Template
 warnings.simplefilter("ignore")
 
 '''
 pip install pandas datetime openpyxl
 '''
+models_to_download = ['com.infa.odin.models.IICS.V2', 'com.infa.odin.models.Script', 'core']
+templates_to_download = ['com.infa.odin.models.IICS.V2', 'com.infa.odin.models.Script']
 
-version = 20241113
+
+version = 20241115
 pause_when_done = True
 
 error_quietly = False
@@ -48,15 +54,356 @@ script_location = os.path.dirname(os.path.abspath(__file__))
 config_file = script_location+"/"+default_config_file
 directory_with_assets_export = script_location+""
 directory_to_write_links_file = script_location+"/links"
-directory_with_templates = script_location+"/templates"
+directory_with_templates = script_location+"/data/templates"
 directory_to_write_resource_files = script_location+"/resources"
 
+#################################################################
+## For Using API
+#################################################################
+use_api = True
+show_raw_errors = False
+default_user = ""
+default_pwd = ""
+default_pod = ""
 
-
+extracts_folder = script_location+'/data'
+prompt_for_login_info = True
+#################################################################
 
 
 timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
 
+
+
+searches = [
+    {
+        'search_name': 'All Resources',
+        'save_filename': 'resources.json',
+        'elastic_search': {
+                "from": 0,
+                "size": 1000,
+                "query": {
+                    "term": {
+                    "core.classType": "core.Resource"
+                    }
+                },
+                "sort": [
+                    {
+                    "com.infa.ccgf.models.governance.scannedTime": {
+                        "order": "desc"
+                    }
+                    }
+                ]
+        }
+    },
+     {
+        'search_name': 'Assets in a Resource',
+        'save_filename': 'assets.json',
+        'elastic_search': {
+                "from": 0,
+                "size": 10000,
+                "query": {
+                    "bool": {
+                        "filter": [
+                            {"term": {"core.origin": "${core_origin}" }},
+                            {"term": {"elementType": "OBJECT" }} 
+                        
+                        ]
+                    }
+                },
+                "sort": [
+                    {
+                        "com.infa.ccgf.models.governance.scannedTime": {
+                            "order": "desc"
+                        }
+                    }
+                ]
+            }
+    }  
+]
+
+
+def cleanup_data():
+    os.makedirs(extracts_folder, exist_ok=True)
+    for filename in os.listdir(extracts_folder):
+        file_path = os.path.join(extracts_folder, filename)
+        try:
+            if os.path.isfile(file_path):
+                os.remove(file_path)  # Delete the file
+        except Exception as e:
+            print(f"ERROR: Error deleting file {file_path}: {e}")
+
+
+# Define function to read JSON files and create DataFrames
+def read_json_files_into_dataframes(assets_file, resources_file):
+    # Load JSON files
+    with open(assets_file, 'r') as f:
+        assets_data = json.load(f)
+    with open(resources_file, 'r') as rf:
+        resources_data = json.load(rf)
+
+    # Extract data from JSON arrays
+    assets = []
+    for a in assets_data:
+        for b in a['hits']['hits']:
+            assets.append(b)
+
+    resources = []
+    for r in resources_data:
+        for rb in r['hits']['hits']:
+            resources.append(rb)
+
+    def get_resource_name_from_id(id_to_check):
+        for resource in resources:
+            source = resource.get("sourceAsMap", {})
+            this_name = source.get("core.name", "")
+            this_type = source.get("core.resourceType", "Reference")
+            this_id = source.get("core.origin", "")
+
+            if "reference" not in this_type.lower() and this_id == id_to_check:
+                return this_name
+        return id_to_check
+
+    def get_hierarchical_path(location):
+        """
+        Function to create hierarchical path from location field
+        """
+        if not location:
+            return ""
+        parts = location.split("/")
+        # Assuming hierarchical path uses core.externalId of objects after base identifier
+        raw_path = "/".join(parts[2:])
+        resource_id = raw_path.split("/")[0]
+        resource_name = get_resource_name_from_id(resource_id)
+        path = raw_path.replace(resource_id, resource_name)
+        return path
+
+
+
+    test_object = assets[0]
+    ## print(f"DEBUGSCOTT: {test_object}")
+    ## exit()
+    # Create dictionaries to hold dataset and element records
+    dataset_records = []
+    element_records = []
+    resource_records = []
+
+    # Iterate through assets to find datasets and elements
+    for asset in assets:
+        source = asset.get("sourceAsMap", {})
+        ## print(f"DEBUGSCOTT: {source}")
+        asset_type = source.get("type", [])
+        if "core.DataSet" in asset_type:
+            # Extract dataset details
+            name = source.get("core.name")
+            reference_id = source.get("core.externalId")
+            location = source.get("core.location")
+            hierarchical_path = get_hierarchical_path(location)
+            dataset_records.append({
+                "Name": name,
+                "Reference ID": reference_id,
+                "HierarchicalPath": hierarchical_path
+            })
+        elif "core.DataElement" in asset_type:
+            # Extract element details
+            name = source.get("core.name")
+            reference_id = source.get("core.externalId")
+            location = source.get("core.location")
+            hierarchical_path = get_hierarchical_path(location)
+            element_records.append({
+                "Name": name,
+                "Reference ID": reference_id,
+                "HierarchicalPath": hierarchical_path
+            })
+
+    for resource in resources:
+        source = resource.get("sourceAsMap", {})
+        name = source.get("core.name")
+        reference_id = source.get("core.externalId")       
+        resource_records.append({
+            "Name": name,
+            "Reference ID": reference_id
+        })
+    # Convert records to dataframes
+    dataset_df = pandas.DataFrame(dataset_records)
+    element_df = pandas.DataFrame(element_records)
+    resource_df = pandas.DataFrame(resource_records)
+
+    return resource_df, dataset_df, element_df
+
+
+def process_search(search_name, **tokens):
+    getCredentials()
+    login()        
+
+    for i in searches:
+        if i['search_name'] == search_name:
+            this_search_name = i['search_name']
+            this_save_filename = i['save_filename']
+            this_elastic_search_raw = i['elastic_search']
+            query_json_template = json.dumps(this_elastic_search_raw)
+            template = Template(query_json_template)
+            this_elastic_search = json.loads(template.safe_substitute(tokens))
+
+            this_full_filename_path = os.path.join(extracts_folder, this_save_filename)
+            getCredentials()
+            login()
+            this_header = headers_bearer
+            this_header['X-INFA-SEARCH-LANGUAGE'] = 'elasticsearch'
+            
+            Result = requests.post(cdgc_url+"/ccgf-searchv2/api/v1/search", headers=this_header, data=json.dumps(this_elastic_search))
+            detailResultJson = json.loads(Result.text)
+
+            os.makedirs(extracts_folder, exist_ok=True)
+            if os.path.exists(this_full_filename_path) and os.path.getsize(this_full_filename_path) > 0:
+                # Read existing data
+                with open(this_full_filename_path, 'r') as file:
+                    try:
+                        data = json.load(file)  # Load existing JSON array
+                    except json.JSONDecodeError:
+                        data = []  # Start a new array if the file is not valid JSON
+            else:
+                data = []  # Start a new array if the file doesn't exist or is empty
+
+            # Append new data to the list
+            data.append(detailResultJson)
+
+            # Write the updated array back to the file
+            with open(this_full_filename_path, 'w') as file:
+                json.dump(data, file, indent=4)
+
+def load_credentials_from_home():
+    global default_user, default_pwd, default_pod
+    
+    # Define the path to the credentials file in the user's home directory
+    credentials_path = os.path.join(os.path.expanduser("~"), ".informatica_cdgc", "credentials.json")
+    
+    # Check if the file exists
+    if os.path.exists(credentials_path):
+        with open(credentials_path, 'r') as file:
+            try:
+                # Load the JSON data
+                credentials = json.load(file)
+                
+                # Set each credential individually if it exists in the file
+                if 'default_user' in credentials:
+                    default_user = credentials['default_user']
+                if 'default_pwd' in credentials:
+                    default_pwd = credentials['default_pwd']
+                if 'default_pod' in credentials:
+                    default_pod = credentials['default_pod']
+                
+            except json.JSONDecodeError:
+                pass
+
+def process_json_error(text):
+    result_text = text
+    if not show_raw_errors:
+        try:
+            resultJson = json.loads(text)
+            result_text = resultJson['message']
+        except Exception as e:
+            pass
+    return result_text
+
+def getCredentials():
+    global pod
+    global iics_user
+    global iics_pwd
+    global iics_url
+    global cdgc_url
+
+    load_credentials_from_home()
+    if any(var not in globals() for var in ['pod', 'iics_user', 'iics_pwd', 'iics_url', 'cdgc_url']):
+        if prompt_for_login_info == True:
+            pod = input(f"Enter pod (default: {default_pod}): ") or default_pod
+            iics_user = input(f"Enter username (default : {default_user}): ") or default_user
+            iics_pwd=getpass.getpass("Enter password: ") or default_pwd   
+        else:
+            if len(default_pod) > 1:
+                pod = default_pod
+            else:
+                pod = input(f"Enter pod (default: {default_pod}): ") or default_pod
+            if len(default_user) > 1:
+                iics_user = default_user
+            else:
+                iics_user = input(f"Enter username (default : {default_user}): ") or default_user
+            if len(default_pwd) > 1:
+                iics_pwd = default_pwd
+            else:
+                iics_pwd=getpass.getpass("Enter password: ") or default_pwd   
+        iics_url = "https://"+pod+".informaticacloud.com"
+        cdgc_url = "https://cdgc-api."+pod+".informaticacloud.com"
+
+def login():
+    global sessionID
+    global orgID
+    global headers
+    global headers_bearer
+    global jwt_token
+    global api_url   
+    # retrieve the sessionID & orgID & headers
+    ## Test to see if I'm already logged in
+    if 'jwt_token' not in globals() or len(headers_bearer) < 2:
+        loginURL = iics_url+"/saas/public/core/v3/login"
+        loginData = {'username': iics_user, 'password': iics_pwd}
+        response = requests.post(loginURL, headers={'content-type':'application/json'}, data=json.dumps(loginData))
+        try:        
+            data = json.loads(response.text)   
+            sessionID = data['userInfo']['sessionId']
+            orgID = data['userInfo']['orgId']
+            api_url = data['products'][0]['baseApiUrl']
+            headers = {'Accept':'application/json', 'INFA-SESSION-ID':sessionID,'IDS-SESSION-ID':sessionID, 'icSessionId':sessionID}
+        except:
+            print("ERROR: logging in: ",loginURL," : ",response.text)
+            quit()
+
+        # retrieve the Bearer token
+        URL = iics_url+"/identity-service/api/v1/jwt/Token?client_id=cdlg_app&nonce=g3t69BWB49BHHNn&access_code="  
+        response = requests.post(URL, headers=headers, data=json.dumps(loginData))
+        try:        
+            data = json.loads(response.text)
+            jwt_token = data['jwt_token']
+            headers_bearer = {'content-type':'application/json', 'Accept':'application/json', 'INFA-SESSION-ID':sessionID,'IDS-SESSION-ID':sessionID, 'icSessionId':sessionID, 'Authorization':'Bearer '+jwt_token}        
+        except:
+            print("ERROR: Getting Token in: ",URL," : ",response.text)
+            quit()
+
+def download_template_file(type, name):
+    getCredentials()
+    login()        
+
+    if not os.path.exists(directory_with_templates):
+        os.makedirs(directory_with_templates) 
+
+    if type == "metamodel":
+
+        this_header = headers_bearer
+        ## this_header['X-INFA-SEARCH-LANGUAGE'] = 'elasticsearch'
+        result = requests.get(cdgc_url + f"/ccgf-modelv2/api/v2/models/{name}/export?packageName={name}", headers=this_header)
+
+        # Check if the request was successful
+        if result.status_code == 200:
+            # Write the binary content to a file
+            with open(f'{directory_with_templates}/{name}.json', 'wb') as file:
+                file.write(result.content)
+        else:
+            print(f"ERROR: Unable to download {name}.json: {result.text}")
+
+    elif type == "template":
+
+        this_header = headers_bearer
+        ## this_header['X-INFA-SEARCH-LANGUAGE'] = 'elasticsearch'
+        this_payload = {"packageName": name, "format": "csv"}
+        result = requests.post(cdgc_url + f"/ccgf-modelv2/api/v2/models/export?packageName={name}&format=csv", headers=this_header, data=json.dumps(this_payload))
+
+        # Check if the request was successful
+        if result.status_code == 200:
+            # Write the binary content to a file
+            with open(f'{directory_with_templates}/{name}_metadata_template.zip', 'wb') as file:
+                file.write(result.content)
+        else:
+            print(f"ERROR: Unable to download {name}_metadata_template.zip: {result.text}")
 
 def handle_exception(exc_type, exc_value, exc_traceback):
     if issubclass(exc_type, KeyboardInterrupt):
@@ -426,37 +773,7 @@ def find_latest_xlsx(directory):
     return latest_file
     
     
-export_file = find_latest_xlsx(directory_with_assets_export)
 
-df_full_export_Elements = None
-df_full_export_Datasets = None
-df_full_export_Resources = None
-try:
-    _, file_extension = os.path.splitext(export_file)
-    if file_extension == '.zip':
-        df_full_export_Elements = extract_dataframe_from_zip(export_file, technical_data_element_sheet)
-        df_full_export_Datasets = extract_dataframe_from_zip(export_file, technical_data_set_sheet)
-        df_full_export_Resources = extract_dataframe_from_zip(export_file, catalog_source_sheet)
-
-    elif file_extension == '.xlsx':
-        df_full_export_Elements = pandas.read_excel(export_file, sheet_name=technical_data_element_sheet)
-        df_full_export_Datasets = pandas.read_excel(export_file, sheet_name=technical_data_set_sheet)
-        df_full_export_Resources = pandas.read_excel(export_file, sheet_name=catalog_source_sheet)
-except Exception as e:
-    print(f"Error reading the Asset Export Excel or Zip file")
-    print(f"   Please perform a search for \"resources\" in CDGC, and export including children.")
-    print(f"   Place the resulting xlsx file or zip file in: {directory_with_assets_export}")
-    finish_up()
-
-required_columns_datasets = [ dataset_name_column, dataset_refid_column, dataset_hierarchical_column]
-if not all(column in df_full_export_Datasets.columns for column in required_columns_datasets):
-    print(f"The required columns {required_columns_datasets} are not present in {export_file}| Try running a search for \"Resources\" in CDGC, and exporting, including children")
-    finish_up()
-
-required_columns_elements = [element_parent_column, element_name_column, element_refid_column, element_hierarchical_column]
-if not all(column in df_full_export_Elements.columns for column in required_columns_elements):
-    print(f"The required columns {required_columns_elements} are not present in {export_file} | Try running a search for \"Resources\" in CDGC, and exporting, including children")
-    finish_up()
 
 def write_csv(df):
     # Get the current timestamp
@@ -531,16 +848,6 @@ def write_dataframe_to_csv(df, file_name):
     df_cleaned.to_csv(file_name, index=False) 
 
 
-def find_latest_xlsx():
-    xlsx_files = glob.glob("*.xlsx")
-    
-    if not xlsx_files:
-        print("No XLSX files found.")
-        return None
-    
-    latest_file = max(xlsx_files, key=os.path.getmtime)
-    return latest_file
-
 def append_or_create(df, new_data):
     if df is None or df.empty:
         # Create the DataFrame if it's None or empty
@@ -566,6 +873,47 @@ def create_extra_fields(row):
 
     return filtered_dict
 
+def getObjectsFromApi():
+    ## Remove files from the current extracts directory
+    cleanup_data()
+    ## Get the resources into a json file
+    process_search('All Resources')
+    ## Get the filename that it saves to:
+        
+    resource_names = []
+    with open(config_file) as csv_file:
+        csv_reader = csv.DictReader(csv_file, delimiter=',')
+        line_count = 0
+        for row in csv_reader:
+            this_Source_Resource = row['Source Resource'].split('/')[0]
+            this_Target_Resource = row['Target Resource'].split('/')[0]
+
+
+            if this_Source_Resource not in resource_names:
+                resource_names.append(this_Source_Resource)
+            if this_Target_Resource not in resource_names:
+                resource_names.append(this_Target_Resource)
+    
+    resources_file = next( (extracts_folder + "/" + s['save_filename'] for s in searches if s['search_name'] == 'All Resources'),  None)
+    with open(resources_file, 'r') as rf:
+        resources_data = json.load(rf)
+
+        resources_to_get = []
+        for r in resources_data:
+            for rb in r['hits']['hits']:
+                source = rb.get("sourceAsMap", {})
+                this_name = source.get("core.name", "")
+                this_id = source.get("core.origin", "")
+                if this_name in resource_names and this_id not in resources_to_get:
+                    resources_to_get.append(this_id)
+
+    for core_origin in resources_to_get:
+        process_search('Assets in a Resource', core_origin=core_origin)
+
+    for model in models_to_download:
+        download_template_file('metamodel', model)
+    for template in templates_to_download:
+        download_template_file('template', template) 
 
 def readConfigAndStart(fileName):
 
@@ -765,6 +1113,43 @@ def readConfigAndStart(fileName):
         for resource_name, resource_dict in resource_classes.items():
             write_resource_to_zip(resource_name, resource_dict)
 
+if use_api:
+    print(f"INFO: Downloading initial data")
+    getObjectsFromApi()
+    df_full_export_Resources, df_full_export_Datasets, df_full_export_Elements = read_json_files_into_dataframes(extracts_folder+"/assets.json", extracts_folder+"/resources.json")
+else:
+    export_file = find_latest_xlsx(directory_with_assets_export)
+
+    df_full_export_Elements = None
+    df_full_export_Datasets = None
+    df_full_export_Resources = None
+    try:
+        _, file_extension = os.path.splitext(export_file)
+        if file_extension == '.zip':
+            df_full_export_Elements = extract_dataframe_from_zip(export_file, technical_data_element_sheet)
+            df_full_export_Datasets = extract_dataframe_from_zip(export_file, technical_data_set_sheet)
+            df_full_export_Resources = extract_dataframe_from_zip(export_file, catalog_source_sheet)
+
+        elif file_extension == '.xlsx':
+            df_full_export_Elements = pandas.read_excel(export_file, sheet_name=technical_data_element_sheet)
+            df_full_export_Datasets = pandas.read_excel(export_file, sheet_name=technical_data_set_sheet)
+            df_full_export_Resources = pandas.read_excel(export_file, sheet_name=catalog_source_sheet)
+    except Exception as e:
+        print(f"Error reading the Asset Export Excel or Zip file")
+        print(f"   Please perform a search for \"resources\" in CDGC, and export including children.")
+        print(f"   Place the resulting xlsx file or zip file in: {directory_with_assets_export}")
+        finish_up()
+
+    required_columns_datasets = [ dataset_name_column, dataset_refid_column, dataset_hierarchical_column]
+    if not all(column in df_full_export_Datasets.columns for column in required_columns_datasets):
+        print(f"The required columns {required_columns_datasets} are not present in {export_file}| Try running a search for \"Resources\" in CDGC, and exporting, including children")
+        finish_up()
+
+    required_columns_elements = [element_parent_column, element_name_column, element_refid_column, element_hierarchical_column]
+    if not all(column in df_full_export_Elements.columns for column in required_columns_elements):
+        print(f"The required columns {required_columns_elements} are not present in {export_file} | Try running a search for \"Resources\" in CDGC, and exporting, including children")
+        finish_up()
+
 load_metamodels()
 
 
@@ -772,41 +1157,7 @@ readConfigAndStart(config_file)
 finish_up()
 
 
-'''
-df = load_template('com.infa.odin.models.IICS.V2.Project')
-new_row = {"core.name": "Test Name", "core.externalId": "test_name"}
-df = pandas.concat([df, pandas.DataFrame([new_row])], ignore_index=True)
 
-for key, df in resource_classes.items():
-    print(df)
-'''
-
-'''
-load_metamodels()
-print(f"Done loading...")
-
-print(find_association("com.infa.odin.models.IICS.V2.Project", "com.infa.odin.models.IICS.V2.Folder"))
-print(find_association("com.infa.odin.models.IICS.V2.Folder", "com.infa.odin.models.IICS.V2.MappingTask"))
-print(find_association("com.infa.odin.models.IICS.V2.MappingTask", "com.infa.odin.models.IICS.V2.MappingTaskInstance"))
-print(find_association("com.infa.odin.models.IICS.V2.MappingTaskInstance", "com.infa.odin.models.IICS.V2.Calculation"))
-
-'''
-
-'''
-base_type, base_id = generate_resource_path("Production/Replication/oracle_to_sqlserver", "com.infa.odin.models.IICS.V2.Project/com.infa.odin.models.IICS.V2.Folder/com.infa.odin.models.IICS.V2.MappingTask")
-dataset_type, dataset_id = generate_additional_class(base_type, base_id, "com.infa.odin.models.IICS.V2.MappingTaskInstance", {"name": "oracle_to_sqlserver (1)"})
-generate_additional_class(dataset_type, dataset_id, "com.infa.odin.models.IICS.V2.Calculation", {"name": "element 1"})
-generate_additional_class(dataset_type, dataset_id, "com.infa.odin.models.IICS.V2.Calculation", {"name": "element 2"})
-generate_additional_class(dataset_type, dataset_id, "com.infa.odin.models.IICS.V2.Calculation", {"name": "element 3"})
-
-for key, df in resource_classes.items():
-    write_dataframe_to_csv(df, directory_to_write_resource_files+"/"+key+".csv")
-    print(df)
-
-print(resource_links)    
-write_dataframe_to_csv(resource_links, directory_to_write_resource_files+"/links.csv")
-
-'''
 
 
 
