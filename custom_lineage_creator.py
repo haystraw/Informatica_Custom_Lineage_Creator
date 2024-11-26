@@ -19,8 +19,8 @@ from string import Template
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 warnings.simplefilter("ignore")
 
-version = 20241122
-
+version = 20241122.1
+print(f"INFO: custom_lineage_creator {version}")
 '''
 pip install pandas datetime openpyxl Requests requests_toolbelt
 
@@ -81,7 +81,8 @@ if len(sys.argv) > 1:
     default_config_file = sys.argv[1]
 
 ## Default Locations for where to download or create items
-script_location = os.path.dirname(os.path.abspath(__file__))
+script_location = os.path.dirname(os.path.abspath(sys.executable if getattr(sys, 'frozen', False) else __file__))
+
 config_file = script_location+"/"+default_config_file
 directory_to_write_links_file = script_location+"/links"
 directory_with_templates = script_location+"/data/templates"
