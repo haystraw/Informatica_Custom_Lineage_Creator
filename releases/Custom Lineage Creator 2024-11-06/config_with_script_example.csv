@@ -1,0 +1,2443 @@
+Source Resource,Source Dataset,Source Element,Target Resource,Target Dataset,Target Element,Dataset Match Score,Element Match Score,ETL Resource Name,ETL Path,ETL Path Types,ETL Dataset Type,ETL Dataset Name,ETL Element Type,ETL Element Name,create_csv.py:core.description,{t_element}:core.description,{t_element}:core.expression,{t_element}:core.calculationComplexity,create_csv.py:com.infa.odin.models.Script.sourceCode,create_csv.py (Statement at Line 89):com.infa.odin.models.Script.sourceStatementText
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_USER_ID,Files,User Information.csv,User ID,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+import pandas as pd
+import sys
+import os
+
+# Oracle JDBC connection parameters
+hostname = ""infadomain.mxdomain""
+port = 1521
+service_name = ""orcl""
+username = ""NSEN""
+
+# Get password from command-line argument
+if len(sys.argv) < 2:
+    print(""Usage: python script.py <password>"")
+    sys.exit(1)
+
+password = sys.argv[1]
+
+# Path to JDBC driver
+jar_path = ""./ojdbc11.jar""  # Replace with the actual path to your ojdbc8.jar file
+
+# JDBC connection string
+url = f""jdbc:oracle:thin:@{hostname}:{port}/{service_name}""
+
+# Establish the connection
+connection = jaydebeapi.connect(
+    ""oracle.jdbc.driver.OracleDriver"",
+    url,
+    [username, password],
+    jar_path
+)
+
+# SQL query to retrieve data
+query = """"""
+    SELECT
+        RWD_USER_ID,
+        USER_NAME,
+        USER_PASSWORD,
+        RWD_FIRST_NAME,
+        RWD_LAST_NAME,
+        RWD_REG_DATE,
+        RWD_BIRTH_DATE,
+        RWD_GENDER,
+        RWD_ADDRESS1,
+        RWD_ADDRESS2,
+        RWD_CITY,
+        RWD_STATE,
+        RWD_POSTCODE,
+        RWD_EMAIL_ID,
+        RWD_PHONE_NUMBER,
+        RWD_CARD_ID,
+        RWD_CARD_STATUS,
+        RWD_CARD_EXP_DATE,
+        POINT_BALANCE
+    FROM NSEN.NS_RWD_USER
+""""""
+
+# Execute query and load results into a DataFrame
+df = pd.read_sql(query, connection)
+
+# Add ""User's Full Name"" column
+df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]
+
+# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})
+
+# Write the DataFrame to a CSV file
+output_file = 'User Information.csv'
+df.to_csv(output_file, index=False)
+
+# Close the connection
+connection.close()
+
+print(f""Data successfully written to {output_file}"")
+","# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})"
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,USER_NAME,Files,User Information.csv,Username,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+import pandas as pd
+import sys
+import os
+
+# Oracle JDBC connection parameters
+hostname = ""infadomain.mxdomain""
+port = 1521
+service_name = ""orcl""
+username = ""NSEN""
+
+# Get password from command-line argument
+if len(sys.argv) < 2:
+    print(""Usage: python script.py <password>"")
+    sys.exit(1)
+
+password = sys.argv[1]
+
+# Path to JDBC driver
+jar_path = ""./ojdbc11.jar""  # Replace with the actual path to your ojdbc8.jar file
+
+# JDBC connection string
+url = f""jdbc:oracle:thin:@{hostname}:{port}/{service_name}""
+
+# Establish the connection
+connection = jaydebeapi.connect(
+    ""oracle.jdbc.driver.OracleDriver"",
+    url,
+    [username, password],
+    jar_path
+)
+
+# SQL query to retrieve data
+query = """"""
+    SELECT
+        RWD_USER_ID,
+        USER_NAME,
+        USER_PASSWORD,
+        RWD_FIRST_NAME,
+        RWD_LAST_NAME,
+        RWD_REG_DATE,
+        RWD_BIRTH_DATE,
+        RWD_GENDER,
+        RWD_ADDRESS1,
+        RWD_ADDRESS2,
+        RWD_CITY,
+        RWD_STATE,
+        RWD_POSTCODE,
+        RWD_EMAIL_ID,
+        RWD_PHONE_NUMBER,
+        RWD_CARD_ID,
+        RWD_CARD_STATUS,
+        RWD_CARD_EXP_DATE,
+        POINT_BALANCE
+    FROM NSEN.NS_RWD_USER
+""""""
+
+# Execute query and load results into a DataFrame
+df = pd.read_sql(query, connection)
+
+# Add ""User's Full Name"" column
+df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]
+
+# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})
+
+# Write the DataFrame to a CSV file
+output_file = 'User Information.csv'
+df.to_csv(output_file, index=False)
+
+# Close the connection
+connection.close()
+
+print(f""Data successfully written to {output_file}"")
+","# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})"
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,USER_PASSWORD,Files,User Information.csv,Password,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+import pandas as pd
+import sys
+import os
+
+# Oracle JDBC connection parameters
+hostname = ""infadomain.mxdomain""
+port = 1521
+service_name = ""orcl""
+username = ""NSEN""
+
+# Get password from command-line argument
+if len(sys.argv) < 2:
+    print(""Usage: python script.py <password>"")
+    sys.exit(1)
+
+password = sys.argv[1]
+
+# Path to JDBC driver
+jar_path = ""./ojdbc11.jar""  # Replace with the actual path to your ojdbc8.jar file
+
+# JDBC connection string
+url = f""jdbc:oracle:thin:@{hostname}:{port}/{service_name}""
+
+# Establish the connection
+connection = jaydebeapi.connect(
+    ""oracle.jdbc.driver.OracleDriver"",
+    url,
+    [username, password],
+    jar_path
+)
+
+# SQL query to retrieve data
+query = """"""
+    SELECT
+        RWD_USER_ID,
+        USER_NAME,
+        USER_PASSWORD,
+        RWD_FIRST_NAME,
+        RWD_LAST_NAME,
+        RWD_REG_DATE,
+        RWD_BIRTH_DATE,
+        RWD_GENDER,
+        RWD_ADDRESS1,
+        RWD_ADDRESS2,
+        RWD_CITY,
+        RWD_STATE,
+        RWD_POSTCODE,
+        RWD_EMAIL_ID,
+        RWD_PHONE_NUMBER,
+        RWD_CARD_ID,
+        RWD_CARD_STATUS,
+        RWD_CARD_EXP_DATE,
+        POINT_BALANCE
+    FROM NSEN.NS_RWD_USER
+""""""
+
+# Execute query and load results into a DataFrame
+df = pd.read_sql(query, connection)
+
+# Add ""User's Full Name"" column
+df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]
+
+# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})
+
+# Write the DataFrame to a CSV file
+output_file = 'User Information.csv'
+df.to_csv(output_file, index=False)
+
+# Close the connection
+connection.close()
+
+print(f""Data successfully written to {output_file}"")
+","# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})"
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_FIRST_NAME,Files,User Information.csv,First Name,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+import pandas as pd
+import sys
+import os
+
+# Oracle JDBC connection parameters
+hostname = ""infadomain.mxdomain""
+port = 1521
+service_name = ""orcl""
+username = ""NSEN""
+
+# Get password from command-line argument
+if len(sys.argv) < 2:
+    print(""Usage: python script.py <password>"")
+    sys.exit(1)
+
+password = sys.argv[1]
+
+# Path to JDBC driver
+jar_path = ""./ojdbc11.jar""  # Replace with the actual path to your ojdbc8.jar file
+
+# JDBC connection string
+url = f""jdbc:oracle:thin:@{hostname}:{port}/{service_name}""
+
+# Establish the connection
+connection = jaydebeapi.connect(
+    ""oracle.jdbc.driver.OracleDriver"",
+    url,
+    [username, password],
+    jar_path
+)
+
+# SQL query to retrieve data
+query = """"""
+    SELECT
+        RWD_USER_ID,
+        USER_NAME,
+        USER_PASSWORD,
+        RWD_FIRST_NAME,
+        RWD_LAST_NAME,
+        RWD_REG_DATE,
+        RWD_BIRTH_DATE,
+        RWD_GENDER,
+        RWD_ADDRESS1,
+        RWD_ADDRESS2,
+        RWD_CITY,
+        RWD_STATE,
+        RWD_POSTCODE,
+        RWD_EMAIL_ID,
+        RWD_PHONE_NUMBER,
+        RWD_CARD_ID,
+        RWD_CARD_STATUS,
+        RWD_CARD_EXP_DATE,
+        POINT_BALANCE
+    FROM NSEN.NS_RWD_USER
+""""""
+
+# Execute query and load results into a DataFrame
+df = pd.read_sql(query, connection)
+
+# Add ""User's Full Name"" column
+df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]
+
+# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})
+
+# Write the DataFrame to a CSV file
+output_file = 'User Information.csv'
+df.to_csv(output_file, index=False)
+
+# Close the connection
+connection.close()
+
+print(f""Data successfully written to {output_file}"")
+","# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})"
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_LAST_NAME,Files,User Information.csv,Last Name,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+import pandas as pd
+import sys
+import os
+
+# Oracle JDBC connection parameters
+hostname = ""infadomain.mxdomain""
+port = 1521
+service_name = ""orcl""
+username = ""NSEN""
+
+# Get password from command-line argument
+if len(sys.argv) < 2:
+    print(""Usage: python script.py <password>"")
+    sys.exit(1)
+
+password = sys.argv[1]
+
+# Path to JDBC driver
+jar_path = ""./ojdbc11.jar""  # Replace with the actual path to your ojdbc8.jar file
+
+# JDBC connection string
+url = f""jdbc:oracle:thin:@{hostname}:{port}/{service_name}""
+
+# Establish the connection
+connection = jaydebeapi.connect(
+    ""oracle.jdbc.driver.OracleDriver"",
+    url,
+    [username, password],
+    jar_path
+)
+
+# SQL query to retrieve data
+query = """"""
+    SELECT
+        RWD_USER_ID,
+        USER_NAME,
+        USER_PASSWORD,
+        RWD_FIRST_NAME,
+        RWD_LAST_NAME,
+        RWD_REG_DATE,
+        RWD_BIRTH_DATE,
+        RWD_GENDER,
+        RWD_ADDRESS1,
+        RWD_ADDRESS2,
+        RWD_CITY,
+        RWD_STATE,
+        RWD_POSTCODE,
+        RWD_EMAIL_ID,
+        RWD_PHONE_NUMBER,
+        RWD_CARD_ID,
+        RWD_CARD_STATUS,
+        RWD_CARD_EXP_DATE,
+        POINT_BALANCE
+    FROM NSEN.NS_RWD_USER
+""""""
+
+# Execute query and load results into a DataFrame
+df = pd.read_sql(query, connection)
+
+# Add ""User's Full Name"" column
+df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]
+
+# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})
+
+# Write the DataFrame to a CSV file
+output_file = 'User Information.csv'
+df.to_csv(output_file, index=False)
+
+# Close the connection
+connection.close()
+
+print(f""Data successfully written to {output_file}"")
+","# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})"
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_REG_DATE,Files,User Information.csv,Registration Date,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+import pandas as pd
+import sys
+import os
+
+# Oracle JDBC connection parameters
+hostname = ""infadomain.mxdomain""
+port = 1521
+service_name = ""orcl""
+username = ""NSEN""
+
+# Get password from command-line argument
+if len(sys.argv) < 2:
+    print(""Usage: python script.py <password>"")
+    sys.exit(1)
+
+password = sys.argv[1]
+
+# Path to JDBC driver
+jar_path = ""./ojdbc11.jar""  # Replace with the actual path to your ojdbc8.jar file
+
+# JDBC connection string
+url = f""jdbc:oracle:thin:@{hostname}:{port}/{service_name}""
+
+# Establish the connection
+connection = jaydebeapi.connect(
+    ""oracle.jdbc.driver.OracleDriver"",
+    url,
+    [username, password],
+    jar_path
+)
+
+# SQL query to retrieve data
+query = """"""
+    SELECT
+        RWD_USER_ID,
+        USER_NAME,
+        USER_PASSWORD,
+        RWD_FIRST_NAME,
+        RWD_LAST_NAME,
+        RWD_REG_DATE,
+        RWD_BIRTH_DATE,
+        RWD_GENDER,
+        RWD_ADDRESS1,
+        RWD_ADDRESS2,
+        RWD_CITY,
+        RWD_STATE,
+        RWD_POSTCODE,
+        RWD_EMAIL_ID,
+        RWD_PHONE_NUMBER,
+        RWD_CARD_ID,
+        RWD_CARD_STATUS,
+        RWD_CARD_EXP_DATE,
+        POINT_BALANCE
+    FROM NSEN.NS_RWD_USER
+""""""
+
+# Execute query and load results into a DataFrame
+df = pd.read_sql(query, connection)
+
+# Add ""User's Full Name"" column
+df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]
+
+# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})
+
+# Write the DataFrame to a CSV file
+output_file = 'User Information.csv'
+df.to_csv(output_file, index=False)
+
+# Close the connection
+connection.close()
+
+print(f""Data successfully written to {output_file}"")
+","# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})"
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_BIRTH_DATE,Files,User Information.csv,Birth Date,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+import pandas as pd
+import sys
+import os
+
+# Oracle JDBC connection parameters
+hostname = ""infadomain.mxdomain""
+port = 1521
+service_name = ""orcl""
+username = ""NSEN""
+
+# Get password from command-line argument
+if len(sys.argv) < 2:
+    print(""Usage: python script.py <password>"")
+    sys.exit(1)
+
+password = sys.argv[1]
+
+# Path to JDBC driver
+jar_path = ""./ojdbc11.jar""  # Replace with the actual path to your ojdbc8.jar file
+
+# JDBC connection string
+url = f""jdbc:oracle:thin:@{hostname}:{port}/{service_name}""
+
+# Establish the connection
+connection = jaydebeapi.connect(
+    ""oracle.jdbc.driver.OracleDriver"",
+    url,
+    [username, password],
+    jar_path
+)
+
+# SQL query to retrieve data
+query = """"""
+    SELECT
+        RWD_USER_ID,
+        USER_NAME,
+        USER_PASSWORD,
+        RWD_FIRST_NAME,
+        RWD_LAST_NAME,
+        RWD_REG_DATE,
+        RWD_BIRTH_DATE,
+        RWD_GENDER,
+        RWD_ADDRESS1,
+        RWD_ADDRESS2,
+        RWD_CITY,
+        RWD_STATE,
+        RWD_POSTCODE,
+        RWD_EMAIL_ID,
+        RWD_PHONE_NUMBER,
+        RWD_CARD_ID,
+        RWD_CARD_STATUS,
+        RWD_CARD_EXP_DATE,
+        POINT_BALANCE
+    FROM NSEN.NS_RWD_USER
+""""""
+
+# Execute query and load results into a DataFrame
+df = pd.read_sql(query, connection)
+
+# Add ""User's Full Name"" column
+df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]
+
+# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})
+
+# Write the DataFrame to a CSV file
+output_file = 'User Information.csv'
+df.to_csv(output_file, index=False)
+
+# Close the connection
+connection.close()
+
+print(f""Data successfully written to {output_file}"")
+","# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})"
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_GENDER,Files,User Information.csv,Gender,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+import pandas as pd
+import sys
+import os
+
+# Oracle JDBC connection parameters
+hostname = ""infadomain.mxdomain""
+port = 1521
+service_name = ""orcl""
+username = ""NSEN""
+
+# Get password from command-line argument
+if len(sys.argv) < 2:
+    print(""Usage: python script.py <password>"")
+    sys.exit(1)
+
+password = sys.argv[1]
+
+# Path to JDBC driver
+jar_path = ""./ojdbc11.jar""  # Replace with the actual path to your ojdbc8.jar file
+
+# JDBC connection string
+url = f""jdbc:oracle:thin:@{hostname}:{port}/{service_name}""
+
+# Establish the connection
+connection = jaydebeapi.connect(
+    ""oracle.jdbc.driver.OracleDriver"",
+    url,
+    [username, password],
+    jar_path
+)
+
+# SQL query to retrieve data
+query = """"""
+    SELECT
+        RWD_USER_ID,
+        USER_NAME,
+        USER_PASSWORD,
+        RWD_FIRST_NAME,
+        RWD_LAST_NAME,
+        RWD_REG_DATE,
+        RWD_BIRTH_DATE,
+        RWD_GENDER,
+        RWD_ADDRESS1,
+        RWD_ADDRESS2,
+        RWD_CITY,
+        RWD_STATE,
+        RWD_POSTCODE,
+        RWD_EMAIL_ID,
+        RWD_PHONE_NUMBER,
+        RWD_CARD_ID,
+        RWD_CARD_STATUS,
+        RWD_CARD_EXP_DATE,
+        POINT_BALANCE
+    FROM NSEN.NS_RWD_USER
+""""""
+
+# Execute query and load results into a DataFrame
+df = pd.read_sql(query, connection)
+
+# Add ""User's Full Name"" column
+df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]
+
+# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})
+
+# Write the DataFrame to a CSV file
+output_file = 'User Information.csv'
+df.to_csv(output_file, index=False)
+
+# Close the connection
+connection.close()
+
+print(f""Data successfully written to {output_file}"")
+","# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})"
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_ADDRESS1,Files,User Information.csv,Primary Address,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+import pandas as pd
+import sys
+import os
+
+# Oracle JDBC connection parameters
+hostname = ""infadomain.mxdomain""
+port = 1521
+service_name = ""orcl""
+username = ""NSEN""
+
+# Get password from command-line argument
+if len(sys.argv) < 2:
+    print(""Usage: python script.py <password>"")
+    sys.exit(1)
+
+password = sys.argv[1]
+
+# Path to JDBC driver
+jar_path = ""./ojdbc11.jar""  # Replace with the actual path to your ojdbc8.jar file
+
+# JDBC connection string
+url = f""jdbc:oracle:thin:@{hostname}:{port}/{service_name}""
+
+# Establish the connection
+connection = jaydebeapi.connect(
+    ""oracle.jdbc.driver.OracleDriver"",
+    url,
+    [username, password],
+    jar_path
+)
+
+# SQL query to retrieve data
+query = """"""
+    SELECT
+        RWD_USER_ID,
+        USER_NAME,
+        USER_PASSWORD,
+        RWD_FIRST_NAME,
+        RWD_LAST_NAME,
+        RWD_REG_DATE,
+        RWD_BIRTH_DATE,
+        RWD_GENDER,
+        RWD_ADDRESS1,
+        RWD_ADDRESS2,
+        RWD_CITY,
+        RWD_STATE,
+        RWD_POSTCODE,
+        RWD_EMAIL_ID,
+        RWD_PHONE_NUMBER,
+        RWD_CARD_ID,
+        RWD_CARD_STATUS,
+        RWD_CARD_EXP_DATE,
+        POINT_BALANCE
+    FROM NSEN.NS_RWD_USER
+""""""
+
+# Execute query and load results into a DataFrame
+df = pd.read_sql(query, connection)
+
+# Add ""User's Full Name"" column
+df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]
+
+# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})
+
+# Write the DataFrame to a CSV file
+output_file = 'User Information.csv'
+df.to_csv(output_file, index=False)
+
+# Close the connection
+connection.close()
+
+print(f""Data successfully written to {output_file}"")
+","# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})"
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_ADDRESS2,Files,User Information.csv,Secondary Address,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+import pandas as pd
+import sys
+import os
+
+# Oracle JDBC connection parameters
+hostname = ""infadomain.mxdomain""
+port = 1521
+service_name = ""orcl""
+username = ""NSEN""
+
+# Get password from command-line argument
+if len(sys.argv) < 2:
+    print(""Usage: python script.py <password>"")
+    sys.exit(1)
+
+password = sys.argv[1]
+
+# Path to JDBC driver
+jar_path = ""./ojdbc11.jar""  # Replace with the actual path to your ojdbc8.jar file
+
+# JDBC connection string
+url = f""jdbc:oracle:thin:@{hostname}:{port}/{service_name}""
+
+# Establish the connection
+connection = jaydebeapi.connect(
+    ""oracle.jdbc.driver.OracleDriver"",
+    url,
+    [username, password],
+    jar_path
+)
+
+# SQL query to retrieve data
+query = """"""
+    SELECT
+        RWD_USER_ID,
+        USER_NAME,
+        USER_PASSWORD,
+        RWD_FIRST_NAME,
+        RWD_LAST_NAME,
+        RWD_REG_DATE,
+        RWD_BIRTH_DATE,
+        RWD_GENDER,
+        RWD_ADDRESS1,
+        RWD_ADDRESS2,
+        RWD_CITY,
+        RWD_STATE,
+        RWD_POSTCODE,
+        RWD_EMAIL_ID,
+        RWD_PHONE_NUMBER,
+        RWD_CARD_ID,
+        RWD_CARD_STATUS,
+        RWD_CARD_EXP_DATE,
+        POINT_BALANCE
+    FROM NSEN.NS_RWD_USER
+""""""
+
+# Execute query and load results into a DataFrame
+df = pd.read_sql(query, connection)
+
+# Add ""User's Full Name"" column
+df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]
+
+# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})
+
+# Write the DataFrame to a CSV file
+output_file = 'User Information.csv'
+df.to_csv(output_file, index=False)
+
+# Close the connection
+connection.close()
+
+print(f""Data successfully written to {output_file}"")
+","# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})"
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_CITY,Files,User Information.csv,City,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+import pandas as pd
+import sys
+import os
+
+# Oracle JDBC connection parameters
+hostname = ""infadomain.mxdomain""
+port = 1521
+service_name = ""orcl""
+username = ""NSEN""
+
+# Get password from command-line argument
+if len(sys.argv) < 2:
+    print(""Usage: python script.py <password>"")
+    sys.exit(1)
+
+password = sys.argv[1]
+
+# Path to JDBC driver
+jar_path = ""./ojdbc11.jar""  # Replace with the actual path to your ojdbc8.jar file
+
+# JDBC connection string
+url = f""jdbc:oracle:thin:@{hostname}:{port}/{service_name}""
+
+# Establish the connection
+connection = jaydebeapi.connect(
+    ""oracle.jdbc.driver.OracleDriver"",
+    url,
+    [username, password],
+    jar_path
+)
+
+# SQL query to retrieve data
+query = """"""
+    SELECT
+        RWD_USER_ID,
+        USER_NAME,
+        USER_PASSWORD,
+        RWD_FIRST_NAME,
+        RWD_LAST_NAME,
+        RWD_REG_DATE,
+        RWD_BIRTH_DATE,
+        RWD_GENDER,
+        RWD_ADDRESS1,
+        RWD_ADDRESS2,
+        RWD_CITY,
+        RWD_STATE,
+        RWD_POSTCODE,
+        RWD_EMAIL_ID,
+        RWD_PHONE_NUMBER,
+        RWD_CARD_ID,
+        RWD_CARD_STATUS,
+        RWD_CARD_EXP_DATE,
+        POINT_BALANCE
+    FROM NSEN.NS_RWD_USER
+""""""
+
+# Execute query and load results into a DataFrame
+df = pd.read_sql(query, connection)
+
+# Add ""User's Full Name"" column
+df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]
+
+# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})
+
+# Write the DataFrame to a CSV file
+output_file = 'User Information.csv'
+df.to_csv(output_file, index=False)
+
+# Close the connection
+connection.close()
+
+print(f""Data successfully written to {output_file}"")
+","# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})"
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_STATE,Files,User Information.csv,State,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+import pandas as pd
+import sys
+import os
+
+# Oracle JDBC connection parameters
+hostname = ""infadomain.mxdomain""
+port = 1521
+service_name = ""orcl""
+username = ""NSEN""
+
+# Get password from command-line argument
+if len(sys.argv) < 2:
+    print(""Usage: python script.py <password>"")
+    sys.exit(1)
+
+password = sys.argv[1]
+
+# Path to JDBC driver
+jar_path = ""./ojdbc11.jar""  # Replace with the actual path to your ojdbc8.jar file
+
+# JDBC connection string
+url = f""jdbc:oracle:thin:@{hostname}:{port}/{service_name}""
+
+# Establish the connection
+connection = jaydebeapi.connect(
+    ""oracle.jdbc.driver.OracleDriver"",
+    url,
+    [username, password],
+    jar_path
+)
+
+# SQL query to retrieve data
+query = """"""
+    SELECT
+        RWD_USER_ID,
+        USER_NAME,
+        USER_PASSWORD,
+        RWD_FIRST_NAME,
+        RWD_LAST_NAME,
+        RWD_REG_DATE,
+        RWD_BIRTH_DATE,
+        RWD_GENDER,
+        RWD_ADDRESS1,
+        RWD_ADDRESS2,
+        RWD_CITY,
+        RWD_STATE,
+        RWD_POSTCODE,
+        RWD_EMAIL_ID,
+        RWD_PHONE_NUMBER,
+        RWD_CARD_ID,
+        RWD_CARD_STATUS,
+        RWD_CARD_EXP_DATE,
+        POINT_BALANCE
+    FROM NSEN.NS_RWD_USER
+""""""
+
+# Execute query and load results into a DataFrame
+df = pd.read_sql(query, connection)
+
+# Add ""User's Full Name"" column
+df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]
+
+# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})
+
+# Write the DataFrame to a CSV file
+output_file = 'User Information.csv'
+df.to_csv(output_file, index=False)
+
+# Close the connection
+connection.close()
+
+print(f""Data successfully written to {output_file}"")
+","# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})"
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_POSTCODE,Files,User Information.csv,Postal Code,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+import pandas as pd
+import sys
+import os
+
+# Oracle JDBC connection parameters
+hostname = ""infadomain.mxdomain""
+port = 1521
+service_name = ""orcl""
+username = ""NSEN""
+
+# Get password from command-line argument
+if len(sys.argv) < 2:
+    print(""Usage: python script.py <password>"")
+    sys.exit(1)
+
+password = sys.argv[1]
+
+# Path to JDBC driver
+jar_path = ""./ojdbc11.jar""  # Replace with the actual path to your ojdbc8.jar file
+
+# JDBC connection string
+url = f""jdbc:oracle:thin:@{hostname}:{port}/{service_name}""
+
+# Establish the connection
+connection = jaydebeapi.connect(
+    ""oracle.jdbc.driver.OracleDriver"",
+    url,
+    [username, password],
+    jar_path
+)
+
+# SQL query to retrieve data
+query = """"""
+    SELECT
+        RWD_USER_ID,
+        USER_NAME,
+        USER_PASSWORD,
+        RWD_FIRST_NAME,
+        RWD_LAST_NAME,
+        RWD_REG_DATE,
+        RWD_BIRTH_DATE,
+        RWD_GENDER,
+        RWD_ADDRESS1,
+        RWD_ADDRESS2,
+        RWD_CITY,
+        RWD_STATE,
+        RWD_POSTCODE,
+        RWD_EMAIL_ID,
+        RWD_PHONE_NUMBER,
+        RWD_CARD_ID,
+        RWD_CARD_STATUS,
+        RWD_CARD_EXP_DATE,
+        POINT_BALANCE
+    FROM NSEN.NS_RWD_USER
+""""""
+
+# Execute query and load results into a DataFrame
+df = pd.read_sql(query, connection)
+
+# Add ""User's Full Name"" column
+df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]
+
+# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})
+
+# Write the DataFrame to a CSV file
+output_file = 'User Information.csv'
+df.to_csv(output_file, index=False)
+
+# Close the connection
+connection.close()
+
+print(f""Data successfully written to {output_file}"")
+","# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})"
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_EMAIL_ID,Files,User Information.csv,Email,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+import pandas as pd
+import sys
+import os
+
+# Oracle JDBC connection parameters
+hostname = ""infadomain.mxdomain""
+port = 1521
+service_name = ""orcl""
+username = ""NSEN""
+
+# Get password from command-line argument
+if len(sys.argv) < 2:
+    print(""Usage: python script.py <password>"")
+    sys.exit(1)
+
+password = sys.argv[1]
+
+# Path to JDBC driver
+jar_path = ""./ojdbc11.jar""  # Replace with the actual path to your ojdbc8.jar file
+
+# JDBC connection string
+url = f""jdbc:oracle:thin:@{hostname}:{port}/{service_name}""
+
+# Establish the connection
+connection = jaydebeapi.connect(
+    ""oracle.jdbc.driver.OracleDriver"",
+    url,
+    [username, password],
+    jar_path
+)
+
+# SQL query to retrieve data
+query = """"""
+    SELECT
+        RWD_USER_ID,
+        USER_NAME,
+        USER_PASSWORD,
+        RWD_FIRST_NAME,
+        RWD_LAST_NAME,
+        RWD_REG_DATE,
+        RWD_BIRTH_DATE,
+        RWD_GENDER,
+        RWD_ADDRESS1,
+        RWD_ADDRESS2,
+        RWD_CITY,
+        RWD_STATE,
+        RWD_POSTCODE,
+        RWD_EMAIL_ID,
+        RWD_PHONE_NUMBER,
+        RWD_CARD_ID,
+        RWD_CARD_STATUS,
+        RWD_CARD_EXP_DATE,
+        POINT_BALANCE
+    FROM NSEN.NS_RWD_USER
+""""""
+
+# Execute query and load results into a DataFrame
+df = pd.read_sql(query, connection)
+
+# Add ""User's Full Name"" column
+df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]
+
+# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})
+
+# Write the DataFrame to a CSV file
+output_file = 'User Information.csv'
+df.to_csv(output_file, index=False)
+
+# Close the connection
+connection.close()
+
+print(f""Data successfully written to {output_file}"")
+","# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})"
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_PHONE_NUMBER,Files,User Information.csv,Phone Number,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+import pandas as pd
+import sys
+import os
+
+# Oracle JDBC connection parameters
+hostname = ""infadomain.mxdomain""
+port = 1521
+service_name = ""orcl""
+username = ""NSEN""
+
+# Get password from command-line argument
+if len(sys.argv) < 2:
+    print(""Usage: python script.py <password>"")
+    sys.exit(1)
+
+password = sys.argv[1]
+
+# Path to JDBC driver
+jar_path = ""./ojdbc11.jar""  # Replace with the actual path to your ojdbc8.jar file
+
+# JDBC connection string
+url = f""jdbc:oracle:thin:@{hostname}:{port}/{service_name}""
+
+# Establish the connection
+connection = jaydebeapi.connect(
+    ""oracle.jdbc.driver.OracleDriver"",
+    url,
+    [username, password],
+    jar_path
+)
+
+# SQL query to retrieve data
+query = """"""
+    SELECT
+        RWD_USER_ID,
+        USER_NAME,
+        USER_PASSWORD,
+        RWD_FIRST_NAME,
+        RWD_LAST_NAME,
+        RWD_REG_DATE,
+        RWD_BIRTH_DATE,
+        RWD_GENDER,
+        RWD_ADDRESS1,
+        RWD_ADDRESS2,
+        RWD_CITY,
+        RWD_STATE,
+        RWD_POSTCODE,
+        RWD_EMAIL_ID,
+        RWD_PHONE_NUMBER,
+        RWD_CARD_ID,
+        RWD_CARD_STATUS,
+        RWD_CARD_EXP_DATE,
+        POINT_BALANCE
+    FROM NSEN.NS_RWD_USER
+""""""
+
+# Execute query and load results into a DataFrame
+df = pd.read_sql(query, connection)
+
+# Add ""User's Full Name"" column
+df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]
+
+# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})
+
+# Write the DataFrame to a CSV file
+output_file = 'User Information.csv'
+df.to_csv(output_file, index=False)
+
+# Close the connection
+connection.close()
+
+print(f""Data successfully written to {output_file}"")
+","# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})"
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_CARD_ID,Files,User Information.csv,Card ID,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+import pandas as pd
+import sys
+import os
+
+# Oracle JDBC connection parameters
+hostname = ""infadomain.mxdomain""
+port = 1521
+service_name = ""orcl""
+username = ""NSEN""
+
+# Get password from command-line argument
+if len(sys.argv) < 2:
+    print(""Usage: python script.py <password>"")
+    sys.exit(1)
+
+password = sys.argv[1]
+
+# Path to JDBC driver
+jar_path = ""./ojdbc11.jar""  # Replace with the actual path to your ojdbc8.jar file
+
+# JDBC connection string
+url = f""jdbc:oracle:thin:@{hostname}:{port}/{service_name}""
+
+# Establish the connection
+connection = jaydebeapi.connect(
+    ""oracle.jdbc.driver.OracleDriver"",
+    url,
+    [username, password],
+    jar_path
+)
+
+# SQL query to retrieve data
+query = """"""
+    SELECT
+        RWD_USER_ID,
+        USER_NAME,
+        USER_PASSWORD,
+        RWD_FIRST_NAME,
+        RWD_LAST_NAME,
+        RWD_REG_DATE,
+        RWD_BIRTH_DATE,
+        RWD_GENDER,
+        RWD_ADDRESS1,
+        RWD_ADDRESS2,
+        RWD_CITY,
+        RWD_STATE,
+        RWD_POSTCODE,
+        RWD_EMAIL_ID,
+        RWD_PHONE_NUMBER,
+        RWD_CARD_ID,
+        RWD_CARD_STATUS,
+        RWD_CARD_EXP_DATE,
+        POINT_BALANCE
+    FROM NSEN.NS_RWD_USER
+""""""
+
+# Execute query and load results into a DataFrame
+df = pd.read_sql(query, connection)
+
+# Add ""User's Full Name"" column
+df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]
+
+# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})
+
+# Write the DataFrame to a CSV file
+output_file = 'User Information.csv'
+df.to_csv(output_file, index=False)
+
+# Close the connection
+connection.close()
+
+print(f""Data successfully written to {output_file}"")
+","# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})"
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_CARD_STATUS,Files,User Information.csv,Card Status,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+import pandas as pd
+import sys
+import os
+
+# Oracle JDBC connection parameters
+hostname = ""infadomain.mxdomain""
+port = 1521
+service_name = ""orcl""
+username = ""NSEN""
+
+# Get password from command-line argument
+if len(sys.argv) < 2:
+    print(""Usage: python script.py <password>"")
+    sys.exit(1)
+
+password = sys.argv[1]
+
+# Path to JDBC driver
+jar_path = ""./ojdbc11.jar""  # Replace with the actual path to your ojdbc8.jar file
+
+# JDBC connection string
+url = f""jdbc:oracle:thin:@{hostname}:{port}/{service_name}""
+
+# Establish the connection
+connection = jaydebeapi.connect(
+    ""oracle.jdbc.driver.OracleDriver"",
+    url,
+    [username, password],
+    jar_path
+)
+
+# SQL query to retrieve data
+query = """"""
+    SELECT
+        RWD_USER_ID,
+        USER_NAME,
+        USER_PASSWORD,
+        RWD_FIRST_NAME,
+        RWD_LAST_NAME,
+        RWD_REG_DATE,
+        RWD_BIRTH_DATE,
+        RWD_GENDER,
+        RWD_ADDRESS1,
+        RWD_ADDRESS2,
+        RWD_CITY,
+        RWD_STATE,
+        RWD_POSTCODE,
+        RWD_EMAIL_ID,
+        RWD_PHONE_NUMBER,
+        RWD_CARD_ID,
+        RWD_CARD_STATUS,
+        RWD_CARD_EXP_DATE,
+        POINT_BALANCE
+    FROM NSEN.NS_RWD_USER
+""""""
+
+# Execute query and load results into a DataFrame
+df = pd.read_sql(query, connection)
+
+# Add ""User's Full Name"" column
+df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]
+
+# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})
+
+# Write the DataFrame to a CSV file
+output_file = 'User Information.csv'
+df.to_csv(output_file, index=False)
+
+# Close the connection
+connection.close()
+
+print(f""Data successfully written to {output_file}"")
+","# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})"
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_CARD_EXP_DATE,Files,User Information.csv,Card Expiration Date,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+import pandas as pd
+import sys
+import os
+
+# Oracle JDBC connection parameters
+hostname = ""infadomain.mxdomain""
+port = 1521
+service_name = ""orcl""
+username = ""NSEN""
+
+# Get password from command-line argument
+if len(sys.argv) < 2:
+    print(""Usage: python script.py <password>"")
+    sys.exit(1)
+
+password = sys.argv[1]
+
+# Path to JDBC driver
+jar_path = ""./ojdbc11.jar""  # Replace with the actual path to your ojdbc8.jar file
+
+# JDBC connection string
+url = f""jdbc:oracle:thin:@{hostname}:{port}/{service_name}""
+
+# Establish the connection
+connection = jaydebeapi.connect(
+    ""oracle.jdbc.driver.OracleDriver"",
+    url,
+    [username, password],
+    jar_path
+)
+
+# SQL query to retrieve data
+query = """"""
+    SELECT
+        RWD_USER_ID,
+        USER_NAME,
+        USER_PASSWORD,
+        RWD_FIRST_NAME,
+        RWD_LAST_NAME,
+        RWD_REG_DATE,
+        RWD_BIRTH_DATE,
+        RWD_GENDER,
+        RWD_ADDRESS1,
+        RWD_ADDRESS2,
+        RWD_CITY,
+        RWD_STATE,
+        RWD_POSTCODE,
+        RWD_EMAIL_ID,
+        RWD_PHONE_NUMBER,
+        RWD_CARD_ID,
+        RWD_CARD_STATUS,
+        RWD_CARD_EXP_DATE,
+        POINT_BALANCE
+    FROM NSEN.NS_RWD_USER
+""""""
+
+# Execute query and load results into a DataFrame
+df = pd.read_sql(query, connection)
+
+# Add ""User's Full Name"" column
+df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]
+
+# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})
+
+# Write the DataFrame to a CSV file
+output_file = 'User Information.csv'
+df.to_csv(output_file, index=False)
+
+# Close the connection
+connection.close()
+
+print(f""Data successfully written to {output_file}"")
+","# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})"
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,POINT_BALANCE,Files,User Information.csv,Point Balance,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"""{s_element}"": ""{t_element}""","""{s_element}"": ""{t_element}""",Single Source Calculation,"import jaydebeapi
+import pandas as pd
+import sys
+import os
+
+# Oracle JDBC connection parameters
+hostname = ""infadomain.mxdomain""
+port = 1521
+service_name = ""orcl""
+username = ""NSEN""
+
+# Get password from command-line argument
+if len(sys.argv) < 2:
+    print(""Usage: python script.py <password>"")
+    sys.exit(1)
+
+password = sys.argv[1]
+
+# Path to JDBC driver
+jar_path = ""./ojdbc11.jar""  # Replace with the actual path to your ojdbc8.jar file
+
+# JDBC connection string
+url = f""jdbc:oracle:thin:@{hostname}:{port}/{service_name}""
+
+# Establish the connection
+connection = jaydebeapi.connect(
+    ""oracle.jdbc.driver.OracleDriver"",
+    url,
+    [username, password],
+    jar_path
+)
+
+# SQL query to retrieve data
+query = """"""
+    SELECT
+        RWD_USER_ID,
+        USER_NAME,
+        USER_PASSWORD,
+        RWD_FIRST_NAME,
+        RWD_LAST_NAME,
+        RWD_REG_DATE,
+        RWD_BIRTH_DATE,
+        RWD_GENDER,
+        RWD_ADDRESS1,
+        RWD_ADDRESS2,
+        RWD_CITY,
+        RWD_STATE,
+        RWD_POSTCODE,
+        RWD_EMAIL_ID,
+        RWD_PHONE_NUMBER,
+        RWD_CARD_ID,
+        RWD_CARD_STATUS,
+        RWD_CARD_EXP_DATE,
+        POINT_BALANCE
+    FROM NSEN.NS_RWD_USER
+""""""
+
+# Execute query and load results into a DataFrame
+df = pd.read_sql(query, connection)
+
+# Add ""User's Full Name"" column
+df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]
+
+# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})
+
+# Write the DataFrame to a CSV file
+output_file = 'User Information.csv'
+df.to_csv(output_file, index=False)
+
+# Close the connection
+connection.close()
+
+print(f""Data successfully written to {output_file}"")
+","# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})"
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_FIRST_NAME,Files,User Information.csv,User's Full Name,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]","df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]",Multi Source Calculation,"import jaydebeapi
+import pandas as pd
+import sys
+import os
+
+# Oracle JDBC connection parameters
+hostname = ""infadomain.mxdomain""
+port = 1521
+service_name = ""orcl""
+username = ""NSEN""
+
+# Get password from command-line argument
+if len(sys.argv) < 2:
+    print(""Usage: python script.py <password>"")
+    sys.exit(1)
+
+password = sys.argv[1]
+
+# Path to JDBC driver
+jar_path = ""./ojdbc11.jar""  # Replace with the actual path to your ojdbc8.jar file
+
+# JDBC connection string
+url = f""jdbc:oracle:thin:@{hostname}:{port}/{service_name}""
+
+# Establish the connection
+connection = jaydebeapi.connect(
+    ""oracle.jdbc.driver.OracleDriver"",
+    url,
+    [username, password],
+    jar_path
+)
+
+# SQL query to retrieve data
+query = """"""
+    SELECT
+        RWD_USER_ID,
+        USER_NAME,
+        USER_PASSWORD,
+        RWD_FIRST_NAME,
+        RWD_LAST_NAME,
+        RWD_REG_DATE,
+        RWD_BIRTH_DATE,
+        RWD_GENDER,
+        RWD_ADDRESS1,
+        RWD_ADDRESS2,
+        RWD_CITY,
+        RWD_STATE,
+        RWD_POSTCODE,
+        RWD_EMAIL_ID,
+        RWD_PHONE_NUMBER,
+        RWD_CARD_ID,
+        RWD_CARD_STATUS,
+        RWD_CARD_EXP_DATE,
+        POINT_BALANCE
+    FROM NSEN.NS_RWD_USER
+""""""
+
+# Execute query and load results into a DataFrame
+df = pd.read_sql(query, connection)
+
+# Add ""User's Full Name"" column
+df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]
+
+# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})
+
+# Write the DataFrame to a CSV file
+output_file = 'User Information.csv'
+df.to_csv(output_file, index=False)
+
+# Close the connection
+connection.close()
+
+print(f""Data successfully written to {output_file}"")
+","# Add ""User's Full Name"" column
+df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]
+
+# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})"
+NSEN Retail Rewards/orcl/NSEN,NS_RWD_USER,RWD_LAST_NAME,Files,User Information.csv,User's Full Name,-1,-1,Python Scripts,python_etl/create_csv.py,com.infa.odin.models.Script.Folder/com.infa.odin.models.Script.Script,com.infa.odin.models.Script.Statement,create_csv.py (Statement at Line 89),com.infa.odin.models.Script.Calculation,{t_element},Python script that reads data from Oracle ({s_dataset}) and creates a csv file ({t_dataset}),"df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]","df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]",Multi Source Calculation,"import jaydebeapi
+import pandas as pd
+import sys
+import os
+
+# Oracle JDBC connection parameters
+hostname = ""infadomain.mxdomain""
+port = 1521
+service_name = ""orcl""
+username = ""NSEN""
+
+# Get password from command-line argument
+if len(sys.argv) < 2:
+    print(""Usage: python script.py <password>"")
+    sys.exit(1)
+
+password = sys.argv[1]
+
+# Path to JDBC driver
+jar_path = ""./ojdbc11.jar""  # Replace with the actual path to your ojdbc8.jar file
+
+# JDBC connection string
+url = f""jdbc:oracle:thin:@{hostname}:{port}/{service_name}""
+
+# Establish the connection
+connection = jaydebeapi.connect(
+    ""oracle.jdbc.driver.OracleDriver"",
+    url,
+    [username, password],
+    jar_path
+)
+
+# SQL query to retrieve data
+query = """"""
+    SELECT
+        RWD_USER_ID,
+        USER_NAME,
+        USER_PASSWORD,
+        RWD_FIRST_NAME,
+        RWD_LAST_NAME,
+        RWD_REG_DATE,
+        RWD_BIRTH_DATE,
+        RWD_GENDER,
+        RWD_ADDRESS1,
+        RWD_ADDRESS2,
+        RWD_CITY,
+        RWD_STATE,
+        RWD_POSTCODE,
+        RWD_EMAIL_ID,
+        RWD_PHONE_NUMBER,
+        RWD_CARD_ID,
+        RWD_CARD_STATUS,
+        RWD_CARD_EXP_DATE,
+        POINT_BALANCE
+    FROM NSEN.NS_RWD_USER
+""""""
+
+# Execute query and load results into a DataFrame
+df = pd.read_sql(query, connection)
+
+# Add ""User's Full Name"" column
+df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]
+
+# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})
+
+# Write the DataFrame to a CSV file
+output_file = 'User Information.csv'
+df.to_csv(output_file, index=False)
+
+# Close the connection
+connection.close()
+
+print(f""Data successfully written to {output_file}"")
+","# Add ""User's Full Name"" column
+df[""User's Full Name""] = df[""RWD_FIRST_NAME""] + "" "" + df[""RWD_LAST_NAME""]
+
+# Rename columns to friendly names
+df = df.rename(columns={
+    ""RWD_USER_ID"": ""User ID"",
+    ""USER_NAME"": ""Username"",
+    ""USER_PASSWORD"": ""Password"",
+    ""RWD_FIRST_NAME"": ""First Name"",
+    ""RWD_LAST_NAME"": ""Last Name"",
+    ""RWD_REG_DATE"": ""Registration Date"",
+    ""RWD_BIRTH_DATE"": ""Birth Date"",
+    ""RWD_GENDER"": ""Gender"",
+    ""RWD_ADDRESS1"": ""Primary Address"",
+    ""RWD_ADDRESS2"": ""Secondary Address"",
+    ""RWD_CITY"": ""City"",
+    ""RWD_STATE"": ""State"",
+    ""RWD_POSTCODE"": ""Postal Code"",
+    ""RWD_EMAIL_ID"": ""Email"",
+    ""RWD_PHONE_NUMBER"": ""Phone Number"",
+    ""RWD_CARD_ID"": ""Card ID"",
+    ""RWD_CARD_STATUS"": ""Card Status"",
+    ""RWD_CARD_EXP_DATE"": ""Card Expiration Date"",
+    ""POINT_BALANCE"": ""Point Balance""
+})"
