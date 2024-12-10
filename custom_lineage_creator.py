@@ -17,40 +17,166 @@ import time
 import configparser
 from string import Template
 from requests_toolbelt.multipart.encoder import MultipartEncoder
+import argparse
+import ast
 warnings.simplefilter("ignore")
 
-version = 20241202
+version = 20241210
 print(f"INFO: custom_lineage_creator {version}")
-'''
-pip install pandas datetime openpyxl Requests requests_toolbelt
+
+help_message = '''
 
 Usage. Execute the script.
-By default, it'll prompt for which config file to use,
-and credential information.
+By default, it'll prompt for which config file to use, and credential information.
 
-Name the config files like this:
-    config - <Lineage Resource Name>.csv
-        or
-    config_<Lineage Resource Name>.csv
+Optionally, you can set parameters:
 
-You can create a credentials file in ~/.informatica_cdgc
-If it finds a default, it'll use it.
-Otherwise it'll prompt for which profile to use.
-format example:
-[default]
-pod = dmp-us
-user = shayes_example
-pwd = xyz
+   --default_user
+        You can specify the username to use. if you do now specify one, it will look in the
+        ~/.informatica_cdgc/credentials file (as shown below)
+        Example:
+            --default_user=shayes_compass
 
-[shayes_compass]
-pod = dmp-us
-user = shayes_compass
-pwd = abc
+   --default_pwd
+        You can specify the password to use. if you do now specify one, it will look in the
+        ~/.informatica_cdgc/credentials file (as shown below)
+        Example:
+            --default_pwd=12345
 
-[reinvent]
-pod = dm-us
-user = reinvent01
-pwd = zyx
+   --default_pod
+        You can specify the pod to use. if you do now specify one, it will look in the
+        ~/.informatica_cdgc/credentials file (as shown below)
+        Typically this "pod" can be shown in the url: for example: "dm-us"
+        Example:
+            --default_pwd=dm-us  
+
+   --prompt_for_login_info            
+        Is set to False, it will not prompt to confirm credentials, unless needed.
+        So, if a [default] profile is set in credentials file, or if credentials
+        provided on the command line, it won't prompt.
+        This defaults to True
+        Example:
+            --prompt_for_login_info=False
+
+   --config_file
+        You can specify an exact config file to use. This csv file should exist in the same
+        directory as the py or exe file that was executed.
+        Example:
+            --config_file="config - My Lineage.csv"
+
+   --config_file_path
+        You can specify an exact config file to use, including the full path. Similar to config_file 
+        setting, but you can specify a full path of the config file. For windows, use linux forward slashes.
+        Example:
+            --config_file_path="c:/junk/config - My Lineage.csv"            
+
+    --pause_before_loading            
+        You can force it to not pause, and just go ahead and load, if set to False
+        This defaults to True
+        Example:
+            --pause_before_loading=False
+
+    --pause_when_done
+        You can set the behavior on whether or not the script pauses when it's complete.
+        (So you can review the information on the window, before it disappears)
+        Example:
+            --pause_when_done=False
+
+    --use_api
+        You can set the script to not use the API. If you set this to False, then 
+        additional requirements will be needed. The script will not make any connection
+        to your env, or use any APIs. For this reason, you'll need to manually export the assets 
+        (Within Data Governance and Catalog perform a search for "resources" and export including children)
+        Place this file in the same location as the script/exe file
+        If using ETL, you'll also need to download the templates, and models that you'll be using.
+        (Within Metadata Command Center, go to customize, metadata Models, then Download Template 
+        Models are json files, Metadata Templates are zip files)
+        place these files in the <script_location>/data/templates folder.
+        If using this option, the script will not create resources, or execute.
+        So you'll need to manually create the resource(s) and execute them.
+        Example:
+            --use_api=False
+
+    --directory_with_assets_export
+        If you set the --use_api=False, you can specify which directory contains the export file zip/xlsx file
+        It will default to the <script_location> and will look for the latest zip file or xlsx file in that directory.
+        Example:
+            --directory_with_assets_export=/my_files/assets
+
+    --directory_to_write_links_file
+        You can specify a different location to write the Lineage Resource zip files.
+        It will default to <script_location>/links 
+        Example:
+            --directory_to_write_links_file=/my_files/links
+
+    --directory_with_templates
+        You can specify a different location to reading/write the template and model files.
+        It will default to <script_location>/data/templates 
+        Example:
+            --directory_with_templates=/my_files/data/templates
+
+    --directory_to_write_resource_files
+        You can specify a different location to write the ETL Resource zip files.
+        It will default to <script_location>/resources 
+        Example:
+            --directory_to_write_resource_files=/my_files/resources
+
+    --extracts_folder
+        You can specify a different location to write the temporary files that the api downloads.
+        These files are raw collection of resources, and assets (in the case of using the api)
+        It will default to <script_location>/data 
+        Example:
+            --extracts_folder=/my_files/data
+
+   --models_to_download
+        You can specify any additional models to download for your ETL. By default
+        it will download "com.infa.odin.models.IICS.V2","com.infa.odin.models.Script", and "core"
+        so no need to specify those. But if you are using an additional model, you can update the script
+        or you can specify the model in an array format. Note that typically, any templates you're going
+        to download, you'll want to get that model as well.
+        Example:
+            --models_to_download="['custom.etl', 'custom.myScript']"
+
+   --templates_to_download
+        You can specify any additional models to download for your ETL. By default
+        it will download "com.infa.odin.models.IICS.V2" and "com.infa.odin.models.Script"
+        so no need to specify those. But if you are using an additional model, you can update the script
+        or you can specify the model in an array format. Note that typically, any templates you're going
+        to download, you'll want to get that model as well.
+        Example:
+            --templates_to_download="['custom.etl', 'custom.myScript']"
+
+Config file Names:            
+    The names of the Lineage Resource will be derived from the config file name
+    Name the config files like this:
+        config - <Lineage Resource Name>.csv
+            or
+        config_<Lineage Resource Name>.csv
+
+Python prerequisites:
+    If needed, install the python prerequisites:  pip install pandas datetime openpyxl Requests requests_toolbelt
+    If executing using the Windows exe, all python prerequisites should be covered.
+    Ensure you have write access to the folder which the pythong script/binary resides
+
+Credentials file:
+    Optionally, you can create a "credentials" file in ~/.informatica_cdgc (or c:/users/xxx/.informatica_cdgc)
+    If it finds a default, it'll use it.
+    Otherwise it'll prompt for which profile to use.
+    Format example (without extra preceding tabs):
+        [default]
+        pod = dmp-us
+        user = shayes_example
+        pwd = xyz
+
+        [shayes_compass]
+        pod = dmp-us
+        user = shayes_compass
+        pwd = abc
+
+        [reinvent]
+        pod = dm-us
+        user = reinvent01
+        pwd = zyx
 '''
 
 ## Set this to pause before exiting
@@ -76,14 +202,16 @@ default_resource_type = ""
 error_quietly = False
 force_attributes_not_in_template = True
 default_config_file = ""
+config_file = default_config_file
 ## Leave this empty, and it'll prompt.
-if len(sys.argv) > 1:
-    default_config_file = sys.argv[1]
+
+## if len(sys.argv) > 1:
+    ## default_config_file = sys.argv[1]
 
 ## Default Locations for where to download or create items
 script_location = os.path.dirname(os.path.abspath(sys.executable if getattr(sys, 'frozen', False) else __file__))
 
-config_file = script_location+"/"+default_config_file
+config_file_path = script_location+"/"+default_config_file
 directory_to_write_links_file = script_location+"/links"
 directory_with_templates = script_location+"/data/templates"
 directory_to_write_resource_files = script_location+"/resources"
@@ -175,6 +303,41 @@ searches = [
             }
     }  
 ]
+
+def parse_parameters():
+    # Check for --help first
+    if '--help' in sys.argv:
+        print(help_message)
+        programPause = input("Press the <ENTER> key to exit...")
+        sys.exit(0)
+
+    parser = argparse.ArgumentParser(description="Dynamically set variables from command-line arguments.")
+    args, unknown_args = parser.parse_known_args()
+
+    for arg in unknown_args:
+        if arg.startswith("--") and "=" in arg:
+            key, value = arg[2:].split("=", 1)  # Remove "--" and split into key and value
+            try:
+                # Safely parse value as Python object (list, dict, etc.)
+                value = ast.literal_eval(value)
+            except (ValueError, SyntaxError):
+                pass  # Leave value as-is if parsing fails
+
+            # Handle appending to arrays or updating dictionaries
+            if key in globals():
+                existing_value = globals()[key]
+                if isinstance(existing_value, list) and isinstance(value, list):
+                    ## If what was passed is an array, we'll append to the array
+                    existing_value.extend(value)  # Append to the existing array
+                elif isinstance(existing_value, dict) and isinstance(value, dict):
+                    ## If what was passed is a dict, we'll add to the dict
+                    existing_value.update(value)  # Add or update keys in the dictionary
+                else:
+                    ## Otherwise, it's an ordinary variable. replace it
+                    globals()[key] = value  # Replace for other types
+            else:
+                ## It's a new variable. Create an ordinary variable.
+                globals()[key] = value  # Set as a new variable
 
 def select_recent_csv(directory):
     """
@@ -408,7 +571,7 @@ def load_credentials_from_home():
     def get_informatica_credentials():
         credentials_path = os.path.join(os.path.expanduser("~"), ".informatica_cdgc", "credentials")
         if not os.path.exists(credentials_path):
-            print(f"Credentials file not found: {credentials_path}")
+            print(f"INFO: Credentials file not found: {credentials_path}")
             return None
 
         config = configparser.ConfigParser()
@@ -1065,7 +1228,7 @@ def getObjectsFromApi():
     ## Get the filename that it saves to:
         
     resource_names = []
-    with open(config_file) as csv_file:
+    with open(config_file_path) as csv_file:
         csv_reader = csv.DictReader(csv_file, delimiter=',')
         line_count = 0
         for row in csv_reader:
@@ -1610,7 +1773,7 @@ def run_metadata_scan(id="", name=""):
 
 def check_and_create_dummy_resources():
     global default_resource_type
-    with open(default_config_file) as csv_file:
+    with open(config_file_path) as csv_file:
         csv_reader = csv.DictReader(csv_file, delimiter=',')
         line_count = 0
         for row in csv_reader:
@@ -1627,15 +1790,22 @@ def check_and_create_dummy_resources():
 
 def main():
     
-    global default_resource_type, df_full_export_Resources, df_full_export_Datasets, df_full_export_Elements, default_config_file, config_file
+    global default_resource_type, df_full_export_Resources, df_full_export_Datasets, df_full_export_Elements, default_config_file, config_file_path
 
-    if len(default_config_file) < 2:
+    parse_parameters()
+
+    if len(config_file) > 2:
+       default_config_file = config_file
+       config_file_path = script_location+"/"+default_config_file
+
+    if not os.path.isfile(config_file_path):
         default_config_file = select_recent_csv(script_location)
-        config_file = default_config_file
+        config_file_path = default_config_file
+
 
     if use_api:
         print(f"INFO: Downloading initial data")
-        set_lineage_resource_name(filepath=config_file, set_name=True)
+        set_lineage_resource_name(filepath=config_file_path, set_name=True)
         if len(default_resource_type) < 1:
             default_resource_type = get_custom_resource_type()
         getObjectsFromApi()
@@ -1684,7 +1854,7 @@ def main():
     ##### Testing modify_custom_resource_file_details(id='aaa63390-dad9-3238-ae4a-6ff3f2349dc9', zipfile_path='./resources/Mass Ingestion_20241115111349.zip')
 
     
-    readConfigAndStart(config_file)
+    readConfigAndStart(config_file_path)
     finish_up()    
 
 if __name__ == "__main__":
