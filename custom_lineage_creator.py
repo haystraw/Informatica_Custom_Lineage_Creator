@@ -21,7 +21,7 @@ import argparse
 import ast
 warnings.simplefilter("ignore")
 
-version = 20241210
+version = 20250319
 print(f"INFO: custom_lineage_creator {version}")
 
 help_message = '''
@@ -263,7 +263,7 @@ searches = [
         'save_filename': 'resources.json',
         'elastic_search': {
                 "from": 0,
-                "size": 1000,
+                "size": 10000,
                 "query": {
                     "term": {
                     "core.classType": "core.Resource"
@@ -490,22 +490,26 @@ def read_json_files_into_dataframes(assets_file, resources_file):
             reference_id = source.get("core.externalId")
             location = source.get("core.location")
             hierarchical_path = get_hierarchical_path(location)
-            dataset_records.append({
-                "Name": name,
-                "Reference ID": reference_id,
-                "HierarchicalPath": hierarchical_path
-            })
+            ## We need to exclude these specific classes, as I can't create lineage for these
+            if not reference_id.endswith('~core.DataSet') and not reference_id.endswith('~core.DataElement'):
+                dataset_records.append({
+                    "Name": name,
+                    "Reference ID": reference_id,
+                    "HierarchicalPath": hierarchical_path
+                })
         elif "core.DataElement" in asset_type:
             # Extract element details
             name = source.get("core.name")
             reference_id = source.get("core.externalId")
             location = source.get("core.location")
             hierarchical_path = get_hierarchical_path(location)
-            element_records.append({
-                "Name": name,
-                "Reference ID": reference_id,
-                "HierarchicalPath": hierarchical_path
-            })
+            ## We need to exclude these specific classes, as I can't create lineage for these
+            if not reference_id.endswith('~core.DataSet') and not reference_id.endswith('~core.DataElement'):
+                element_records.append({
+                    "Name": name,
+                    "Reference ID": reference_id,
+                    "HierarchicalPath": hierarchical_path
+                })
 
     for resource in resources:
         source = resource.get("sourceAsMap", {})
@@ -525,7 +529,7 @@ def read_json_files_into_dataframes(assets_file, resources_file):
     return resource_df, dataset_df, element_df
 
 
-def process_search(search_name, **tokens):
+def process_search(search_name, dataset_list=[], **tokens):
     getCredentials()
     login()        
 
@@ -546,6 +550,32 @@ def process_search(search_name, **tokens):
             
             Result = requests.post(cdgc_url+"/ccgf-searchv2/api/v1/search", headers=this_header, data=json.dumps(this_elastic_search))
             detailResultJson = json.loads(Result.text)
+
+            total_hits_this_search = 0
+            try:
+                total_hits_this_search = dataset_list and detailResultJson['hits']['totalHits']
+            except:
+                pass
+
+            if dataset_list and detailResultJson['hits']['totalHits'] > 9999:
+                ## If the hits are 10000, then we didn't get everything
+                ## the API is limiting us. 
+                ## So we're rewrite the elastic search to include the names of the datasets, if possible
+                this_updated_elastic_search = this_elastic_search
+                should_clause = []
+                for value in dataset_list:
+                    should_clause.extend([
+                        {"wildcard": {"core.name": f"*{value}*"}},
+                        {"wildcard": {"core.externalId": f"*{value}*"}}
+                    ])
+                this_updated_elastic_search['query']['bool']['should'] = should_clause
+                this_updated_elastic_search['query']['bool']['minimum_should_match'] = 1
+
+                print(f"WARN: The search is returning a large number. I'll try to limit that down, now")
+                ## print(f"{this_updated_elastic_search}")
+                Result = requests.post(cdgc_url+"/ccgf-searchv2/api/v1/search", headers=this_header, data=json.dumps(this_updated_elastic_search))
+                detailResultJson = json.loads(Result.text)
+
 
             os.makedirs(extracts_folder, exist_ok=True)
             if os.path.exists(this_full_filename_path) and os.path.getsize(this_full_filename_path) > 0:
@@ -1228,19 +1258,35 @@ def getObjectsFromApi():
     ## Get the filename that it saves to:
         
     resource_names = []
+    dataset_list = []
     with open(config_file_path) as csv_file:
         csv_reader = csv.DictReader(csv_file, delimiter=',')
         line_count = 0
         for row in csv_reader:
             this_Source_Resource = row['Source Resource'].split('/')[0]
             this_Target_Resource = row['Target Resource'].split('/')[0]
-
+            this_Source_Dataset = row['Source Dataset']
+            this_Target_Dataset = row['Target Dataset']
 
             if this_Source_Resource not in resource_names:
                 resource_names.append(this_Source_Resource)
             if this_Target_Resource not in resource_names:
                 resource_names.append(this_Target_Resource)
-    
+
+            if '{' not in this_Source_Dataset:
+                cleaned_Source_Dataset = re.sub(r'[^a-zA-Z0-9_ ]', '', this_Source_Dataset)
+                if cleaned_Source_Dataset not in dataset_list and len(cleaned_Source_Dataset) > 1:
+                   dataset_list.append(cleaned_Source_Dataset)
+                   ## We're only going to use this list of datasets if the list of all objects is too large (10000)
+                   ## So, I'm ignoring any regex in this string, and if it contains a {name} token or something, we'll ignore it
+
+            if '{' not in this_Target_Dataset:
+                cleaned_Target_Dataset = re.sub(r'[^a-zA-Z0-9_ ]', '', this_Target_Dataset)
+                if cleaned_Target_Dataset not in dataset_list and len(cleaned_Target_Dataset) > 1:
+                   dataset_list.append(cleaned_Target_Dataset)
+                   ## We're only going to use this list of datasets if the list of all objects is too large (10000)
+                   ## So, I'm ignoring any regex in this string, and if it contains a {name} token or something, we'll ignore it
+
     resources_file = next( (extracts_folder + "/" + s['save_filename'] for s in searches if s['search_name'] == 'All Resources'),  None)
     with open(resources_file, 'r') as rf:
         resources_data = json.load(rf)
@@ -1255,7 +1301,7 @@ def getObjectsFromApi():
                     resources_to_get.append(this_id)
 
     for core_origin in resources_to_get:
-        process_search('Assets in a Resource', core_origin=core_origin)
+        process_search('Assets in a Resource', dataset_list=dataset_list, core_origin=core_origin)
 
     for model in models_to_download:
         download_template_file('metamodel', model)
