@@ -15,13 +15,14 @@ import requests
 import getpass
 import time
 import configparser
+import socket
 from string import Template
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 import argparse
 import ast
 warnings.simplefilter("ignore")
 
-version = 20250319
+version = 20250424
 print(f"INFO: custom_lineage_creator {version}")
 
 help_message = '''
@@ -232,6 +233,7 @@ extracts_folder = script_location+'/data'
 prompt_for_login_info = True
 #################################################################
 
+
 #################################################################
 ## For Using Export File (no API)
 #################################################################
@@ -303,6 +305,17 @@ searches = [
             }
     }  
 ]
+
+def infaLog(annotation=""):
+    try:
+        ## This is simply a "phone home" call.
+        ## Just to note which Informatica Org is using this script
+        ## If it's unable to reach this URL, it will ignore.
+        this_headers = {"Content-Type": "application/json", "X-Auth-Key": "b74a58ca9f170e49f65b7c56df0f452b0861c8c870864599b2fbc656ff758f5d"}
+        logs=[{"timestamp": time.time(), "function": f"[{os.path.basename(__file__)}][main]", "execution_time": "N/A", "annotation": annotation, "machine": socket.gethostname()}]
+        response=requests.post("https://infa-lic-worker.tim-qin-yujue.workers.dev", data=json.dumps({"logs": logs}), headers=this_headers)
+    except:
+        pass
 
 def parse_parameters():
     # Check for --help first
@@ -724,6 +737,7 @@ def login():
             print("ERROR: logging in: ",loginURL," : ",response.text)
             quit()
 
+        infaLog(f"Org: {orgID}, URL: {iics_url}, Version: {version}")
         # retrieve the Bearer token
         URL = iics_url+"/identity-service/api/v1/jwt/Token?client_id=cdlg_app&nonce=g3t69BWB49BHHNn&access_code="  
         response = requests.post(URL, headers=headers, data=json.dumps(loginData))
