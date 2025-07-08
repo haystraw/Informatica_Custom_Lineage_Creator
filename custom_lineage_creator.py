@@ -22,7 +22,7 @@ import argparse
 import ast
 warnings.simplefilter("ignore")
 
-version = 20250424
+version = 20250708
 print(f"INFO: custom_lineage_creator {version}")
 
 help_message = '''
@@ -1327,7 +1327,6 @@ def readConfigAndStart(fileName):
     global final_dataframe
     final_dataframe = None
 
-
     with open(fileName) as csv_file:
         csv_reader = csv.DictReader(csv_file, delimiter=',')
         line_count = 0
@@ -1338,8 +1337,21 @@ def readConfigAndStart(fileName):
             this_Target_Resource = row['Target Resource']
             this_Target_Dataset_regex = row['Target Dataset']
             this_Target_Element_regex = row['Target Element']
-            this_Dataset_Match_Score = row['Dataset Match Score']
-            this_Element_Match_Score = row['Element Match Score']
+            
+            # Fix: Handle empty or invalid Dataset Match Score
+            try:
+                this_Dataset_Match_Score = float(row['Dataset Match Score']) if row['Dataset Match Score'].strip() else 0.0
+            except (ValueError, AttributeError):
+                print(f"Warning: Invalid Dataset Match Score '{row['Dataset Match Score']}' in row {line_count + 1}, using default value 0.0")
+                this_Dataset_Match_Score = 0.0
+            
+            # Fix: Handle empty or invalid Element Match Score
+            try:
+                this_Element_Match_Score = float(row['Element Match Score']) if row['Element Match Score'].strip() else 0.0
+            except (ValueError, AttributeError):
+                print(f"Warning: Invalid Element Match Score '{row['Element Match Score']}' in row {line_count + 1}, using default value 0.0")
+                this_Element_Match_Score = 0.0
+            
             this_ETL_Resource_Name = row.get('ETL Resource Name', "")
             this_ETL_Path = row.get('ETL Path', "")
             this_ETL_Path_Types = row.get('ETL Path Types', "")
@@ -1381,7 +1393,7 @@ def readConfigAndStart(fileName):
                     dt_name = target[dataset_name_column]
                     
                     score = difflib.SequenceMatcher(None, ds_name, dt_name).ratio()
-                    if score >= float(this_Dataset_Match_Score):
+                    if score >= this_Dataset_Match_Score:  # Now using the float value directly
 
                         if len(this_ETL_Path) > 1 and len(this_ETL_Path_Types) > 1:
                             replacement_text = {'{name}': ds_name, '{s_dataset}': ds_name, '{t_dataset}': dt_name }
@@ -1435,7 +1447,6 @@ def readConfigAndStart(fileName):
                     df_full_export_Elements[element_name_column].str.contains('^'+this_Source_Element_regex+'$', na=False, regex=True, flags=re.IGNORECASE)
                 ]
 
-
                 for index, s_element in source_element_match.iterrows():
                     es_hp = s_element[element_hierarchical_column]
                     es_id = s_element[element_refid_column]
@@ -1446,8 +1457,7 @@ def readConfigAndStart(fileName):
                         dt_id = target[dataset_refid_column]
                         dt_name = target[dataset_name_column]                        
                         target_dataset_score = difflib.SequenceMatcher(None, ds_name, dt_name).ratio()
-                        if target_dataset_score >= float(this_Dataset_Match_Score):
-
+                        if target_dataset_score >= this_Dataset_Match_Score:  # Now using the float value directly
 
                             updated_regex =  this_Target_Element_regex.replace('{name}',es_name).replace('{s_dataset}',ds_name).replace('{t_dataset}',dt_name).replace('{s_element}',es_name)
                             target_element_match = df_full_export_Elements[
@@ -1460,7 +1470,7 @@ def readConfigAndStart(fileName):
                                 et_name = target[element_name_column]
 
                                 score = difflib.SequenceMatcher(None, es_name, et_name).ratio()
-                                if score >= float(this_Element_Match_Score):
+                                if score >= this_Element_Match_Score:  # Now using the float value directly
                                     if len(base_type) > 1 and len(base_id) > 1:
                                         replacement_text = {'{name}': es_name, '{s_dataset}': ds_name, '{t_dataset}': dt_name, '{s_element}': es_name, '{t_element}': et_name}
                                         etl_element_name = this_ETL_Element_Name.replace('{name}',es_name).replace('{s_dataset}',ds_name).replace('{t_dataset}',dt_name).replace('{s_element}',es_name).replace('{t_element}',et_name)
@@ -1504,8 +1514,9 @@ def readConfigAndStart(fileName):
                                                         'Match Score': score
                                                         }
                                         df = pandas.DataFrame(element_lineage, index=[0])   
-                                        final_dataframe = append_or_create(final_dataframe,df)                                         
+                                        final_dataframe = append_or_create(final_dataframe,df)
 
+            line_count += 1  # Add line counter increment
 
     created_resources = []
     if resource_classes is not None and resource_classes:
